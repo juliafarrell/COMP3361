@@ -32,7 +32,7 @@ Process::Process(string inputTraceFile) {
 }
 
 Process::Process(const Process& orig) {
-    throw invalid_argument("No copy constructor allowed, please use the trace file");
+    throw invalid_argument("No copy constructor allowed, please use a trace file");
 }
 
 Process::~Process() {
@@ -40,6 +40,34 @@ Process::~Process() {
 }
 
 Process::Run() {
+    
+}
+
+std::string Process::memsize(int size) {
+    
+}
+   
+std::string Process::diff(int expectedValues, int address) {
+    
+}
+    
+std::string Process::store(int values, int address) {
+    
+}
+    
+std::string Process::replicate(int value, int count, int address) {
+    
+}
+    
+std::string Process::duplicate(int count, int sourceAddr, int destAddr) {
+    
+}
+    
+std::string Process::print(int count, int address) {
+    
+}
+    
+std::string Process::comment(std::string commentMe) {
     
 }
 

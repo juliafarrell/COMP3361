@@ -25,9 +25,21 @@ public:
     Process(std::string inputTraceFile);
     Process(const Process& orig);
     virtual ~Process();
+    /**
+     * Run allocates an empty array used for processing commands in the trace
+     * file. Each command in the trace file is handled with separate helper
+     * functions.
+     * @return standard output stream of trace data
+     */
     void Run();
 private:
-
+    std::string memsize(int size);
+    std::string diff(int expectedValues, int address);
+    std::string store(int values, int address);
+    std::string replicate(int value, int count, int address);
+    std::string duplicate(int count, int sourceAddr, int destAddr);
+    std::string print(int count, int address);
+    std::string comment(std::string commentMe);
 };
 
 #endif /* PROCESS_H */
