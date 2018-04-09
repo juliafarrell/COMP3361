@@ -13,12 +13,33 @@
 
 #include "Process.h"
 
+using namespace std;
+
 Process::Process() {
+    cout << "No trace file";
+    fileName = "no file :(";
+}
+
+Process::Process(string inputTraceFile) {
+    // open file
+    fileName = inputTraceFile;
+    ifs.open(fileName);
+    // check if file opened
+    if (!ifs) {
+        throw runtime_error("File '" + inputTraceFile + "' could not open properly");
+    }
+    // TODO: other things??
 }
 
 Process::Process(const Process& orig) {
+    throw invalid_argument("No copy constructor allowed, please use the trace file");
 }
 
 Process::~Process() {
+    ifs.close(fileName);
+}
+
+Process::Run() {
+    
 }
 

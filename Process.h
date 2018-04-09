@@ -15,10 +15,12 @@
 #define PROCESS_H
 
 #include <string>
+#include <fstream>
 
 class Process {
 public:
     std::string fileName;
+    std::ifstream ifs;
     Process();
     Process(std::string inputTraceFile);
     Process(const Process& orig);
