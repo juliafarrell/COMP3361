@@ -33,6 +33,7 @@ public:
      */
     void Run();
 private:
+    std::string* memBank;
     std::string memsize(int size);
     std::string diff(int expectedValues, int address);
     std::string store(int values, int address);
