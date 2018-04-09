@@ -33,7 +33,7 @@ public:
      */
     void Run();
 private:
-    std::string* memBank;
+    std::vector<uint8_t> memBank;
     std::string memsize(int size);
     std::string diff(int expectedValues, int address);
     std::string store(int values, int address);
