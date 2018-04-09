@@ -78,16 +78,20 @@ void Process::memsize(int size) {
     memBank.resize(size);
 }
    
-void Process::diff(uint8_t expectedValues[], int address) {
+void Process::diff(string expectedValues, int address) {
     
 }
     
-void Process::store(uint8_t values[], int address) {
-    
+void Process::store(string values, int address) {
+    memBank.at(address) = values;
 }
     
-void Process::replicate(int value, int count, int address) {
-    
+void Process::replicate(string value, int count, int address) {
+    value = value.append("  ");
+    for (int i = 0; i < count; i++) {
+        value = value.append(value);
+    }
+    store(value, address);
 }
     
 void Process::duplicate(int count, int sourceAddr, int destAddr) {
