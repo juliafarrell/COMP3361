@@ -97,8 +97,4 @@ void Process::duplicate(int count, int sourceAddr, int destAddr) {
 void Process::print(int count, int address) {
     
 }
-    
-std::string Process::comment(std::string commentMe) {
-    
-}
 
