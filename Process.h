@@ -14,11 +14,16 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
+#include <string>
+
 class Process {
 public:
+    std::string fileName;
     Process();
+    Process(std::string inputTraceFile);
     Process(const Process& orig);
     virtual ~Process();
+    void Run();
 private:
 
 };
