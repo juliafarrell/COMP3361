@@ -40,7 +40,38 @@ Process::~Process() {
 }
 
 Process::Run() {
-    
+    while (ifs.is_open()) {
+        string curLine;
+        string func;
+        int lineNo = 1;
+        while(!ifs.eof()) {
+            cout << lineNo << ':';
+            getline(ifs, curLine);
+            istringstream line(curLine);
+            line >> func;
+            if (func.compare('memsize') == 0) {
+
+            } 
+            else if (func.compare('diff') == 0) {
+
+            }
+            else if (func.compare('store') == 0) {
+                
+            }
+            else if (func.compare('replicate') == 0) {
+                
+            }
+            else if (func.compare('duplicate') == 0) {
+                
+            }
+            else if (func.compare('print') == 0) {
+                
+            }
+            else {
+                cout << curLine;
+            }
+        }
+    }
 }
 
 void Process::memsize(int size) {
