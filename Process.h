@@ -16,6 +16,7 @@
 
 #include <string>
 #include <fstream>
+#include <vector>
 
 class Process {
 public:
@@ -34,13 +35,12 @@ public:
     void Run();
 private:
     std::vector<uint8_t> memBank;
-    std::string memsize(int size);
-    std::string diff(int expectedValues, int address);
-    std::string store(int values, int address);
-    std::string replicate(int value, int count, int address);
-    std::string duplicate(int count, int sourceAddr, int destAddr);
-    std::string print(int count, int address);
-    std::string comment(std::string commentMe);
+    void memsize(int size);
+    void diff(uint8_t expectedValues[], int address);
+    void store(int values, int address);
+    void replicate(int value, int count, int address);
+    void duplicate(int count, int sourceAddr, int destAddr);
+    void print(int count, int address);
 };
 
 #endif /* PROCESS_H */

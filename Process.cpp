@@ -43,27 +43,27 @@ Process::Run() {
     
 }
 
-std::string Process::memsize(int size) {
-    
+void Process::memsize(int size) {
+    memBank.resize(size);
 }
    
-std::string Process::diff(int expectedValues, int address) {
+void Process::diff(uint8_t expectedValues[], int address) {
     
 }
     
-std::string Process::store(int values, int address) {
+void Process::store(uint8_t values[], int address) {
     
 }
     
-std::string Process::replicate(int value, int count, int address) {
+void Process::replicate(int value, int count, int address) {
     
 }
     
-std::string Process::duplicate(int count, int sourceAddr, int destAddr) {
+void Process::duplicate(int count, int sourceAddr, int destAddr) {
     
 }
     
-std::string Process::print(int count, int address) {
+void Process::print(int count, int address) {
     
 }
     
