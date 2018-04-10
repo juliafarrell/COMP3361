@@ -1,0 +1,8 @@
+# Set mem to 1000
+memsize 1000
+
+# store bytes and test values
+store   81 82 83 84 85 efa0
+diff    81 82 83 84 85 efa0
+
+

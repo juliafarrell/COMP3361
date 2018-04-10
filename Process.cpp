@@ -39,13 +39,12 @@ Process::~Process() {
     ifs.close(fileName);
 }
 
-Process::Run() {
+void Process::Run() {
     while (ifs.is_open()) {
         string curLine;
         int lineNo = 1;
         while(!ifs.eof()) {
             getline(ifs, curLine);
-            cout << lineNo << ':' << curLine;
             
             istringstream line(curLine);
             
@@ -54,12 +53,12 @@ Process::Run() {
                 args.push_back(arg);
             }
             
-            if (args[0].compare('memsize') == 0 && args.size() == 2) {
+            if (args[0] == "memsize" && args.size() == 2) {
                 // memsize size
                 int memSize = (int)strtol(args[1], NULL, 16);
                 this->memsize(memSize);
             } 
-            else if (args[0].compare('store') == 0 && args.size() >= 3) {
+            else if (args[0] == "store" && args.size() >= 3) {
                 // store values addr
                 std::string values = "";
                 int valuesSize = args.size()-1;
@@ -70,7 +69,7 @@ Process::Run() {
                 
                 this->store(values, addr);
             }
-            else if (args[0].compare('diff') == 0 && args.size() >= 3) {
+            else if (args[0] == "diff" && args.size() >= 3) {
                 // diff expected_values addr
                 std::string expected_values = "";
                 int expectedSize = args.size()-1;
@@ -79,9 +78,9 @@ Process::Run() {
                 }
                 int addr = (int)strtol(args[args.size()-1], NULL, 16);
                 
-                this->diff(expected_values, addr);
+                this->diff(expected_values, addr, expectedSize);
             }
-            else if (args[0].compare('replicate') == 0 && args.size() == 4) {
+            else if (args[0] == "replicate" && args.size() == 4) {
                 // replicate value count addr
                 std::string value = args[1];
                 int count = (int)strtol(args[2], NULL, 16);
@@ -89,7 +88,7 @@ Process::Run() {
                 
                 this->replicate(value, count, addr);
             }
-            else if (args[0].compare('duplicate') == 0 && args.size() == 4) {
+            else if (args[0] == "duplicate" && args.size() == 4) {
                 // duplicate count src_addr dest_addr
                 int count = (int)strtol(args[1], NULL, 16);
                 int src_addr = (int)strtol(args[2], NULL, 16);
@@ -97,7 +96,7 @@ Process::Run() {
                 
                 this->duplicate(count, src_addr, dest_addr);
             }
-            else if (args[0].compare('print') == 0 && args.size() == 3) {
+            else if (args[0] == "print" && args.size() == 3) {
                 // print count addr
                 int count = (int)strtol(args[1], NULL, 16);
                 int addr = (int)strtol(args[2], NULL, 16);
@@ -108,6 +107,7 @@ Process::Run() {
             else if(!(curLine.empty() || (!curLine.empty() && curLine[0] !== "#"))) {
                 throw invalid_argument("Invalid command");
             }
+            cout << lineNo << ':' << curLine;
             lineNo++;
         }
     }
@@ -117,8 +117,21 @@ void Process::memsize(int size) {
     memBank.resize(size);
 }
    
-void Process::diff(string expectedValues, int address) {
-    
+void Process::diff(string expectedValues, int address, int expectedSize) {
+    string curVal;
+    istringstream exp(expectedValues);
+    for (int i = 0; i < expectedSize; i++) {
+        exp >> curVal;
+        if (memBank[address+i].compareTo(curVal) != 0) {
+            string errMsg = "address: " 
+                    + (address + i) 
+                    + "; expected: "
+                    + curVal
+                    + "; actual: "
+                    + memBank[address+i];
+            throw std::runtime_error(errMsg);
+        }
+    }
 }
     
 void Process::store(string values, int address) {
@@ -134,10 +147,23 @@ void Process::replicate(string value, int count, int address) {
 }
     
 void Process::duplicate(int count, int sourceAddr, int destAddr) {
-    
+    for (int i = 0; i < count; i++) {
+        memBank.at(destAddr+i) = memBank.at(sourceAddr+i);
+    }
 }
     
 void Process::print(int count, int address) {
-    
+    int bytesThisLine = 0;
+    string printMe = "";
+    for (int i = 0; i < count; i++) {
+        if (bytesThisLine == 16){
+            printMe.append("\n");
+            bytesThisLine = 0;
+        } else {
+            printMe.append(memBank.at(address+i));
+            printMe.append(" ");
+            bytesThisLine++;
+        }
+    }
 }
 
