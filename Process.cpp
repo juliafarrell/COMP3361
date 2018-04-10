@@ -67,7 +67,7 @@ Process::Run() {
             else if (func.compare('print') == 0) {
                 
             }
-            else {
+            else if(!curLine.empty() && curLine[0] == "#") {
                 cout << curLine;
             }
         }
