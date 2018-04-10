@@ -47,17 +47,6 @@ Process::Run() {
             cout << lineNo << ':';
             getline(ifs, curLine);
             istringstream line(curLine);
-<<<<<<< HEAD
-            line >> func;
-            if (func.compare('memsize') == 0) {
-                line >> func;
-                memsize(func);
-            } 
-            else if (func.compare('store') == 0) {
-
-            }
-            else if (func.compare('diff') == 0) {
-=======
             std::vector<std::string> args;
             
             while (line >> arg) {
@@ -67,11 +56,10 @@ Process::Run() {
             if (args[0].compare('memsize') == 0) {
 
             } 
-            else if (args[0].compare('diff') == 0) {
+            else if (args[0].compare('store') == 0) {
 
             }
-            else if (args[0].compare('store') == 0) {
->>>>>>> 0a5ff34847a4aaa3632cc44fd3579fd3b976d447
+            else if (args[0].compare('diff') == 0) {
                 
             }
             else if (args[0].compare('replicate') == 0) {
@@ -86,13 +74,10 @@ Process::Run() {
             else if(!curLine.empty() && curLine[0] == "#") {
                 cout << curLine;
             }
-<<<<<<< HEAD
-            lineNo++;
-=======
             else {
                 throw invalid_argument("Invalid command");
             }
->>>>>>> 0a5ff34847a4aaa3632cc44fd3579fd3b976d447
+            lineNo++;
         }
     }
 }
