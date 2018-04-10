@@ -50,12 +50,13 @@ Process::Run() {
             istringstream line(curLine);
             line >> func;
             if (func.compare('memsize') == 0) {
-
+                line >> func;
+                memsize(func);
             } 
-            else if (func.compare('diff') == 0) {
+            else if (func.compare('store') == 0) {
 
             }
-            else if (func.compare('store') == 0) {
+            else if (func.compare('diff') == 0) {
                 
             }
             else if (func.compare('replicate') == 0) {
@@ -70,6 +71,7 @@ Process::Run() {
             else {
                 cout << curLine;
             }
+            lineNo++;
         }
     }
 }
