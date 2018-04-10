@@ -44,37 +44,68 @@ Process::Run() {
         string curLine;
         int lineNo = 1;
         while(!ifs.eof()) {
-            cout << lineNo << ':';
             getline(ifs, curLine);
-            istringstream line(curLine);
-            std::vector<std::string> args;
+            cout << lineNo << ':' << curLine;
             
+            istringstream line(curLine);
+            
+            std::vector<std::string> args;
             while (line >> arg) {
                 args.push_back(arg);
             }
             
-            if (args[0].compare('memsize') == 0) {
-
+            if (args[0].compare('memsize') == 0 && args.size() == 2) {
+                // memsize size
+                int memSize = (int)strtol(args[1], NULL, 16);
+                this->memsize(memSize);
             } 
-            else if (args[0].compare('store') == 0) {
-
-            }
-            else if (args[0].compare('diff') == 0) {
+            else if (args[0].compare('store') == 0 && args.size() >= 3) {
+                // store values addr
+                std::string values = "";
+                int valuesSize = args.size()-1;
+                for(int i = 1; i < valuesSize; i++) {
+                    values << " " << args[i];
+                }
+                int addr = (int)strtol(args[args.size()-1], NULL, 16);
                 
+                this->store(values, addr);
             }
-            else if (args[0].compare('replicate') == 0) {
+            else if (args[0].compare('diff') == 0 && args.size() >= 3) {
+                // diff expected_values addr
+                std::string expected_values = "";
+                int expectedSize = args.size()-1;
+                for(int i = 1; i < expectedSize; i++) {
+                    expected_values << " " << args[i];
+                }
+                int addr = (int)strtol(args[args.size()-1], NULL, 16);
                 
+                this->diff(expected_values, addr);
             }
-            else if (args[0].compare('duplicate') == 0) {
+            else if (args[0].compare('replicate') == 0 && args.size() == 4) {
+                // replicate value count addr
+                std::string value = args[1];
+                int count = (int)strtol(args[2], NULL, 16);
+                int addr = (int)strtol(args[3], NULL, 16);
                 
+                this->replicate(value, count, addr);
             }
-            else if (args[0].compare('print') == 0) {
+            else if (args[0].compare('duplicate') == 0 && args.size() == 4) {
+                // duplicate count src_addr dest_addr
+                int count = (int)strtol(args[1], NULL, 16);
+                int src_addr = (int)strtol(args[2], NULL, 16);
+                int dest_addr = (int)strtol(args[3], NULL, 16);
                 
+                this->duplicate(count, src_addr, dest_addr);
             }
-            else if(!curLine.empty() && curLine[0] == "#") {
-                cout << curLine;
+            else if (args[0].compare('print') == 0 && args.size() == 3) {
+                // print count addr
+                int count = (int)strtol(args[1], NULL, 16);
+                int addr = (int)strtol(args[2], NULL, 16);
+                
+                this->print(count, addr);
             }
-            else {
+            // if the line is empty or its a comment its valid. Else error.
+            else if(!(curLine.empty() || (!curLine.empty() && curLine[0] !== "#"))) {
                 throw invalid_argument("Invalid command");
             }
             lineNo++;
