@@ -17,6 +17,7 @@ using namespace std;
 int main(int argc, char** argv) {
     string myFile = argv[1];
     Process(myFile).Run();
+
     return 0;
 }
 

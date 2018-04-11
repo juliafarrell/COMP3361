@@ -62,29 +62,29 @@ void Process::Run() {
                 args.push_back(argHex);
             }
             
-            if (func == "memsize" && args.size() == 1) {
+            if (func == string("memsize") && args.size() == 1) {
                 this->memsize(args[0]);
             } 
-            else if (func == "store" && args.size() >= 2) {
+            else if (func == string("store") && args.size() >= 2) {
                 int numBytes = args.size() - 1;
                 this->store(args, numBytes);
             }
-            else if (func == "diff" && args.size() >= 2) {
+            else if (func == string("diff") && args.size() >= 2) {
                 int numBytes = args.size() - 1;
                 this->diff(args, numBytes);
             }
-            else if (func == "replicate" && args.size() == 3) {
+            else if (func == string("replicate") && args.size() == 3) {
                 this->replicate(args[0], args[1], args[2]);
             }
-            else if (func == "duplicate" && args.size() == 3) {
+            else if (func == string("duplicate") && args.size() == 3) {
                 this->duplicate(args[0], args[1], args[2]);
             }
-            else if (func == "print" && args.size() == 2) {
+            else if (func == string("print") && args.size() == 2) {
                 this->print(args[0], args[1]);
             }
             // if the line is empty or its a comment its valid. Else error.
             else if(!curLine.empty() && !(&curLine[0] == "#")) {
-                throw invalid_argument("Invalid command");
+                throw invalid_argument("Invalid command: " + curLine);
             }
             cout << lineNo << ':' << curLine;
             lineNo++;
