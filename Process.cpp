@@ -13,6 +13,13 @@
 
 #include "Process.h"
 
+#include <string>
+#include <fstream>
+#include <vector>
+#include <iostream>
+#include <sstream>
+
+
 using namespace std;
 
 Process::Process() {
@@ -36,75 +43,47 @@ Process::Process(const Process& orig) {
 }
 
 Process::~Process() {
-    ifs.close(fileName);
+    ifs.close();
 }
 
 void Process::Run() {
     while (ifs.is_open()) {
-        string curLine;
+        string curLine, func, arg;
+        uint8_t argHex;
         int lineNo = 1;
         while(!ifs.eof()) {
             getline(ifs, curLine);
-            
-            istringstream line(curLine);
-            
-            std::vector<std::string> args;
-            while (line >> arg) {
-                args.push_back(arg);
+            std::istringstream line(curLine);
+            std::vector<uint8_t> args;
+            // get string of function name
+            line >> func;
+            // get arguments in hex form, pushing onto uint8_t vector
+            while (line >> std::hex >> argHex) {
+                args.push_back(argHex);
             }
             
-            if (args[0] == "memsize" && args.size() == 2) {
-                // memsize size
-                int memSize = (int)strtol(args[1], NULL, 16);
-                this->memsize(memSize);
+            if (func == "memsize" && args.size() == 1) {
+                this->memsize(args[0]);
             } 
-            else if (args[0] == "store" && args.size() >= 3) {
-                // store values addr
-                std::string values = "";
-                int valuesSize = args.size()-1;
-                for(int i = 1; i < valuesSize; i++) {
-                    values << " " << args[i];
-                }
-                int addr = (int)strtol(args[args.size()-1], NULL, 16);
-                
-                this->store(values, addr);
+            else if (func == "store" && args.size() >= 2) {
+                int numBytes = args.size() - 1;
+                this->store(args, numBytes);
             }
-            else if (args[0] == "diff" && args.size() >= 3) {
-                // diff expected_values addr
-                std::string expected_values = "";
-                int expectedSize = args.size()-1;
-                for(int i = 1; i < expectedSize; i++) {
-                    expected_values << " " << args[i];
-                }
-                int addr = (int)strtol(args[args.size()-1], NULL, 16);
-                
-                this->diff(expected_values, addr, expectedSize);
+            else if (func == "diff" && args.size() >= 2) {
+                int numBytes = args.size() - 1;
+                this->diff(args, numBytes);
             }
-            else if (args[0] == "replicate" && args.size() == 4) {
-                // replicate value count addr
-                std::string value = args[1];
-                int count = (int)strtol(args[2], NULL, 16);
-                int addr = (int)strtol(args[3], NULL, 16);
-                
-                this->replicate(value, count, addr);
+            else if (func == "replicate" && args.size() == 3) {
+                this->replicate(args[0], args[1], args[2]);
             }
-            else if (args[0] == "duplicate" && args.size() == 4) {
-                // duplicate count src_addr dest_addr
-                int count = (int)strtol(args[1], NULL, 16);
-                int src_addr = (int)strtol(args[2], NULL, 16);
-                int dest_addr = (int)strtol(args[3], NULL, 16);
-                
-                this->duplicate(count, src_addr, dest_addr);
+            else if (func == "duplicate" && args.size() == 3) {
+                this->duplicate(args[0], args[1], args[2]);
             }
-            else if (args[0] == "print" && args.size() == 3) {
-                // print count addr
-                int count = (int)strtol(args[1], NULL, 16);
-                int addr = (int)strtol(args[2], NULL, 16);
-                
-                this->print(count, addr);
+            else if (func == "print" && args.size() == 2) {
+                this->print(args[0], args[1]);
             }
             // if the line is empty or its a comment its valid. Else error.
-            else if(!(curLine.empty() || (!curLine.empty() && curLine[0] !== "#"))) {
+            else if(!curLine.empty() && !(&curLine[0] == "#")) {
                 throw invalid_argument("Invalid command");
             }
             cout << lineNo << ':' << curLine;
@@ -113,54 +92,53 @@ void Process::Run() {
     }
 }
 
-void Process::memsize(int size) {
+void Process::memsize(uint8_t size) {
     memBank.resize(size);
 }
    
-void Process::diff(string expectedValues, int address, int expectedSize) {
-    string curVal;
-    istringstream exp(expectedValues);
-    for (int i = 0; i < expectedSize; i++) {
-        exp >> curVal;
-        if (memBank[address+i].compareTo(curVal) != 0) {
-            string errMsg = "address: " 
-                    + (address + i) 
-                    + "; expected: "
-                    + curVal
-                    + "; actual: "
-                    + memBank[address+i];
-            throw std::runtime_error(errMsg);
+void Process::diff(std::vector<uint8_t> args, int numBytes) {
+    uint8_t curVal, expVal;
+    uint8_t address = args[numBytes+1];
+    for (int i = 0; i < numBytes; i++) {
+        curVal = args[i];
+        expVal = memBank.at(address + i);
+        if (curVal != expVal) {
+            // TODO: Fix error message
+            throw runtime_error("diff throws error");
         }
     }
 }
     
-void Process::store(string values, int address) {
-    memBank.at(address) = values;
-}
-    
-void Process::replicate(string value, int count, int address) {
-    value = value.append("  ");
-    for (int i = 0; i < count; i++) {
-        value = value.append(value);
-    }
-    store(value, address);
-}
-    
-void Process::duplicate(int count, int sourceAddr, int destAddr) {
-    for (int i = 0; i < count; i++) {
-        memBank.at(destAddr+i) = memBank.at(sourceAddr+i);
+void Process::store(std::vector<uint8_t> args, int numBytes) {
+    int address = (int)(args[numBytes+1]);
+    for (int i = 0; i < numBytes; i++) {
+        memBank.at(address + i) = args[i];
     }
 }
     
-void Process::print(int count, int address) {
+void Process::replicate(uint8_t value, uint8_t count, uint8_t address) {
+    for (int i = 0; i < count; i++) {
+        memBank.at(address + 1) = value;
+    }
+}
+    
+void Process::duplicate(uint8_t count, uint8_t sourceAddr, uint8_t destAddr) {
+    for (int i = 0; i < count; i++) {
+        memBank.at(destAddr + i) = memBank.at(sourceAddr + i);
+    }
+}
+    
+void Process::print(uint8_t count, uint8_t address) {
     int bytesThisLine = 0;
     string printMe = "";
+    string curByte;
     for (int i = 0; i < count; i++) {
         if (bytesThisLine == 16){
             printMe.append("\n");
             bytesThisLine = 0;
         } else {
-            printMe.append(memBank.at(address+i));
+            curByte = std::to_string(memBank.at(address+i));
+            printMe.append(curByte);
             printMe.append(" ");
             bytesThisLine++;
         }
