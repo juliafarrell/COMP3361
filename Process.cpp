@@ -49,7 +49,7 @@ Process::~Process() {
 void Process::Run() {
     while (ifs.is_open()) {
         string curLine, func, arg;
-        int argHex;
+        uint32_t argHex;
         int lineNo = 1;
         while(!ifs.eof()) {
             getline(ifs, curLine);
@@ -96,11 +96,11 @@ void Process::Run() {
     }
 }
 
-void Process::memsize(uint16_t size) {
+void Process::memsize(uint32_t size) {
     memBank.resize(size);
 }
    
-void Process::diff(std::vector<uint8_t> args, int numBytes) {
+void Process::diff(std::vector<uint8_t> args, uint32_t numBytes) {
     uint8_t curVal, expVal;
     uint8_t address = args[numBytes+1];
     for (int i = 0; i < numBytes; i++) {
@@ -113,26 +113,26 @@ void Process::diff(std::vector<uint8_t> args, int numBytes) {
     }
 }
     
-void Process::store(std::vector<uint8_t> args, int numBytes) {
+void Process::store(std::vector<uint8_t> args, uint32_t numBytes) {
     int address = (int)(args[numBytes+1]);
     for (int i = 0; i < numBytes; i++) {
         memBank.at(address + i) = args[i];
     }
 }
     
-void Process::replicate(uint8_t value, uint8_t count, uint8_t address) {
+void Process::replicate(uint8_t value, uint32_t count, uint32_t address) {
     for (int i = 0; i < count; i++) {
         memBank.at(address + 1) = value;
     }
 }
     
-void Process::duplicate(uint8_t count, uint8_t sourceAddr, uint8_t destAddr) {
+void Process::duplicate(uint32_t count, uint32_t sourceAddr, uint32_t destAddr) {
     for (int i = 0; i < count; i++) {
         memBank.at(destAddr + i) = memBank.at(sourceAddr + i);
     }
 }
     
-void Process::print(uint8_t count, uint8_t address) {
+void Process::print(uint32_t count, uint32_t address) {
     int bytesThisLine = 0;
     string printMe = "";
     string curByte;
