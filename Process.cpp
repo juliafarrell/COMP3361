@@ -57,15 +57,15 @@ void Process::Run() {
             std::vector<uint8_t> args;
             // get string of function name
             line >> func;
+            cout << "func: " << func << "\n";
             // get arguments in hex form, pushing onto uint8_t vector
             while (line >> std::hex >> argHex) {
+                cout << "\ncalling push_back on: ";
+                cout << std::to_string(argHex);
                 args.push_back(argHex);
             }
-            cout << "args.size: " << args.size();
-            for (int i = 0; i < args.size() - 1; i++) {
-                cout << "\nargs[i] = ";
-                cout << std::to_string(args.at(i));
-            }
+            
+            
             if (func == string("memsize") && args.size() == 1) {
                 this->memsize(args[0]);
             } 
