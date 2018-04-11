@@ -61,7 +61,11 @@ void Process::Run() {
             while (line >> std::hex >> argHex) {
                 args.push_back(argHex);
             }
-            
+            cout << "args.size: " << args.size();
+            for (int i = 0; i < args.size() - 1; i++) {
+                cout << "\nargs[i] = ";
+                cout << std::to_string(args.at(i));
+            }
             if (func == string("memsize") && args.size() == 1) {
                 this->memsize(args[0]);
             } 
