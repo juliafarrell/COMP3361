@@ -49,19 +49,21 @@ Process::~Process() {
 void Process::Run() {
     while (ifs.is_open()) {
         string curLine, func, arg;
-        uint8_t argHex;
+        int argHex;
         int lineNo = 1;
         while(!ifs.eof()) {
             getline(ifs, curLine);
+            
+            cout << lineNo++ << ':' << curLine << endl;
+            
             std::istringstream line(curLine);
             std::vector<uint8_t> args;
-            // get string of function name
+            
             line >> func;
-            cout << "func: " << func << "\n";
+            
             // get arguments in hex form, pushing onto uint8_t vector
             while (line >> std::hex >> argHex) {
-                cout << "\ncalling push_back on: ";
-                cout << std::to_string(argHex);
+                cout << "calling push_back on: " << std::to_string(argHex) << std::endl;
                 args.push_back(argHex);
             }
             
@@ -90,13 +92,11 @@ void Process::Run() {
             else if(!curLine.empty() && !(&curLine[0] == "#")) {
                 throw invalid_argument("Invalid command: " + curLine);
             }
-            cout << lineNo << ':' << curLine;
-            lineNo++;
         }
     }
 }
 
-void Process::memsize(uint8_t size) {
+void Process::memsize(uint16_t size) {
     memBank.resize(size);
 }
    

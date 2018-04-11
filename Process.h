@@ -36,7 +36,7 @@ public:
     void Run();
 private:
     std::vector<uint8_t> memBank;
-    void memsize(uint8_t size);
+    void memsize(uint16_t size);
     void diff(std::vector<uint8_t> args, int numBytes);
     void store(std::vector<uint8_t> args, int numBytes);
     void replicate(uint8_t value, uint8_t count, uint8_t address);
