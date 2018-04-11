@@ -36,12 +36,12 @@ public:
     void Run();
 private:
     std::vector<uint8_t> memBank;
-    void memsize(uint16_t size);
-    void diff(std::vector<uint8_t> args, int numBytes);
-    void store(std::vector<uint8_t> args, int numBytes);
-    void replicate(uint8_t value, uint8_t count, uint8_t address);
-    void duplicate(uint8_t count, uint8_t sourceAddr, uint8_t destAddr);
-    void print(uint8_t count, uint8_t address);
+    void memsize(uint32_t size);
+    void diff(std::vector<uint32_t> args, uint32_t numBytes);
+    void store(std::vector<uint32_t> args, uint32_t numBytes);
+    void replicate(uint32_t value, uint32_t count, uint32_t address);
+    void duplicate(uint32_t count, uint32_t sourceAddr, uint32_t destAddr);
+    void print(uint32_t count, uint32_t address);
 };
 
 #endif /* PROCESS_H */

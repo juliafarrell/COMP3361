@@ -18,6 +18,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 
 using namespace std;
@@ -46,41 +47,46 @@ Process::~Process() {
     ifs.close();
 }
 
+/* This method parses the cmd file and routes each command to the correct method
+ * In addition it prints each line.
+ */
 void Process::Run() {
     while (ifs.is_open()) {
         string curLine, func, arg;
         uint32_t argHex;
-        int lineNo = 1;
+        uint32_t lineNo = 1;
         while(!ifs.eof()) {
             getline(ifs, curLine);
             
-            cout << lineNo++ << ':' << curLine << endl;
+            cout << lineNo++ << ":" << curLine << endl;
             
             std::istringstream line(curLine);
-            std::vector<uint8_t> args;
+            std::vector<uint32_t> args;
             
             line >> func;
             
-            // get arguments in hex form, pushing onto uint8_t vector
+            // get arguments in hex form, pushing onto uint32_t vector
             while (line >> std::hex >> argHex) {
-                cout << "calling push_back on: " << std::to_string(argHex) << std::endl;
+                //cout << "calling push_back on: " << to_string(argHex) << std::endl;
                 args.push_back(argHex);
             }
             
+            char v = curLine[0];
             
             if (func == string("memsize") && args.size() == 1) {
                 this->memsize(args[0]);
             } 
             else if (func == string("store") && args.size() >= 2) {
-                int numBytes = args.size() - 1;
+                uint32_t numBytes = args.size() - 1;
                 this->store(args, numBytes);
             }
             else if (func == string("diff") && args.size() >= 2) {
-                int numBytes = args.size() - 1;
+                uint32_t numBytes = args.size() - 1;
                 this->diff(args, numBytes);
             }
             else if (func == string("replicate") && args.size() == 3) {
-                this->replicate(args[0], args[1], args[2]);
+                uint32_t val = args[0];
+                this->replicate(val, args[1], args[2]);
             }
             else if (func == string("duplicate") && args.size() == 3) {
                 this->duplicate(args[0], args[1], args[2]);
@@ -89,7 +95,10 @@ void Process::Run() {
                 this->print(args[0], args[1]);
             }
             // if the line is empty or its a comment its valid. Else error.
-            else if(!curLine.empty() && !(&curLine[0] == "#")) {
+            else if(curLine.empty() || curLine[0] == v) {
+                
+            }
+            else {
                 throw invalid_argument("Invalid command: " + curLine);
             }
         }
@@ -100,52 +109,59 @@ void Process::memsize(uint32_t size) {
     memBank.resize(size);
 }
    
-void Process::diff(std::vector<uint8_t> args, uint32_t numBytes) {
-    uint8_t curVal, expVal;
-    uint8_t address = args[numBytes+1];
-    for (int i = 0; i < numBytes; i++) {
-        curVal = args[i];
-        expVal = memBank.at(address + i);
+/* Prints all values different than what is in memory
+ */
+void Process::diff(std::vector<uint32_t> args, uint32_t numBytes) {
+    uint32_t curVal, expVal;
+    uint32_t address = args[numBytes];
+    for (uint32_t i = 0; i < numBytes; i++) {
+        expVal = args[i];
+        curVal = memBank.at(address + i);
         if (curVal != expVal) {
-            // TODO: Fix error message
-            throw runtime_error("diff throws error");
+           cerr << "- at: " << std::hex << address + i << " current: " << curVal << " expected: " << expVal << std::dec << endl;
         }
     }
 }
     
-void Process::store(std::vector<uint8_t> args, uint32_t numBytes) {
-    int address = (int)(args[numBytes+1]);
-    for (int i = 0; i < numBytes; i++) {
+void Process::store(std::vector<uint32_t> args, uint32_t numBytes) {
+    uint32_t address = args[numBytes];
+    for (uint32_t i = 0; i < numBytes; i++) {
         memBank.at(address + i) = args[i];
     }
 }
     
-void Process::replicate(uint8_t value, uint32_t count, uint32_t address) {
-    for (int i = 0; i < count; i++) {
-        memBank.at(address + 1) = value;
+void Process::replicate(uint32_t value, uint32_t count, uint32_t address) {
+    for (uint32_t i = 0; i < count; i++) {
+        memBank.at(address + i) = value;
     }
 }
     
 void Process::duplicate(uint32_t count, uint32_t sourceAddr, uint32_t destAddr) {
-    for (int i = 0; i < count; i++) {
+    for (uint32_t i = 0; i < count; i++) {
         memBank.at(destAddr + i) = memBank.at(sourceAddr + i);
     }
 }
     
 void Process::print(uint32_t count, uint32_t address) {
     int bytesThisLine = 0;
-    string printMe = "";
-    string curByte;
-    for (int i = 0; i < count; i++) {
+    for (uint32_t i = 0; i < count; i++) {
         if (bytesThisLine == 16){
-            printMe.append("\n");
+            cout << endl;
             bytesThisLine = 0;
         } else {
-            curByte = std::to_string(memBank.at(address+i));
-            printMe.append(curByte);
-            printMe.append(" ");
+            if(bytesThisLine == 0) {
+                cout << " ";
+            }
+            uint32_t b = memBank.at(address+i);
+            if(!b) {
+                b = 0;
+            }
+            cout << setfill('0') << setw(2) << std::hex << b << std::dec << " ";
             bytesThisLine++;
         }
+    }
+    if(bytesThisLine > 0) {
+        cout << endl;
     }
 }
 
