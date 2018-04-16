@@ -25,7 +25,7 @@ int main(int argc, char** argv) {
     if (!ifs) {
         throw std::runtime_error("File '" + my_file + "' could not open properly");
     }
-    while (ifs.is_open()) {
+    if (ifs.is_open()) {
         std::string cur_line;
         uint8_t mem_size;
         while (!ifs.eof()) {
