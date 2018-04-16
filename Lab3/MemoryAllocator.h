@@ -16,7 +16,7 @@
 class MemoryAllocator {
 public:
     MemoryAllocator();
-    MemoryAllocator(uint8_t num_pages);
+    MemoryAllocator(uint32_t num_pages);
     MemoryAllocator(const MemoryAllocator& orig);
     virtual ~MemoryAllocator();
     bool AllocatePageFrames(uint32_t count, std::vector<uint32_t> &page_frames); 
