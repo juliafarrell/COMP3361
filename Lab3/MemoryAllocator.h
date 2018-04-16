@@ -15,7 +15,6 @@
 
 class MemoryAllocator {
 public:
-    std::vector<uint8_t> mem;
     MemoryAllocator();
     MemoryAllocator(uint8_t num_pages);
     MemoryAllocator(const MemoryAllocator& orig);
@@ -24,6 +23,7 @@ public:
     bool FreePageFrames(uint32_t count, std::vector<uint32_t> &page_frames);
     uint32_t get_page_frames_free() const;
 private:
+    std::vector<uint8_t> mem;
     // Index of total number of page frames in mem vector
     // Should hold 32 bit value, so 4 * 8 bits.
     static const uint8_t pf_total = 0;
