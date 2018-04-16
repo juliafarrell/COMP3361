@@ -13,7 +13,7 @@ MemoryAllocator::MemoryAllocator() {
 
 MemoryAllocator::MemoryAllocator(uint8_t num_pages) {
     // set memory to proper size, assuming page size of 16^4 bytes
-    mem.resize(num_pages * 65536);
+    mem.resize(num_pages * 65536 / 8);
     mem[pf_total] = num_pages;
     // first page reserved for memory allocator
     mem[pf_free] = num_pages - 1;
