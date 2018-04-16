@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <stdint.h>
 #include <vector>
+#include <iostream>
 
 class MemoryAllocator {
 public:
