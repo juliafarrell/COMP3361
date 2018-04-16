@@ -22,11 +22,10 @@ MemoryAllocator::MemoryAllocator(uint8_t num_pages) {
     
     // build linked list of free pages
     // info of next page stored in first 4 bytes
-    for (int i = 1; i < num_pages; i++) {
-        // step 1: get next page value in 32 bytes as an array of 8 bytes
-        
-        // step 2: put that array into the memory vector
+    for (int i = 1; i < num_pages -1; i++) {
+        mem[0x10000 * i] = mem[0x10000 * (i+1)];
     }
+    mem[num_pages*65536 - 1] = 0xFFFFFFFF;
 }
 
 MemoryAllocator::MemoryAllocator(const MemoryAllocator& orig) {
