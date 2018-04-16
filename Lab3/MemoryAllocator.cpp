@@ -5,6 +5,7 @@
  * Created on April 12, 2018, 11:19 AM
  */
 
+#include <cstring>
 #include "MemoryAllocator.h"
 
 MemoryAllocator::MemoryAllocator() {
@@ -36,14 +37,20 @@ MemoryAllocator::~MemoryAllocator() {
     std::cout << "empty destructor ~MemoryAllocator was called";
 }
 
-bool AllocatePageFrames(uint32_t count, std::vector<uint32_t> &page_frames) {
+bool MemoryAllocator::AllocatePageFrames(uint32_t count, std::vector<uint32_t> &page_frames) {
+    // 1. See if its possible
+    uint32_t val;
+    memcpy(&val, &mem[pf_free], sizeof(uint32_t));
+    // If not, return false
+    
+    // if so,
+   
+}
+
+bool MemoryAllocator::FreePageFrames(uint32_t count, std::vector<uint32_t> &page_frames) {
     
 }
 
-bool FreePageFrames(uint32_t count, std::vector<uint32_t> &page_frames) {
-    
-}
-
-uint32_t get_page_frames_free() {
+uint32_t MemoryAllocator::get_page_frames_free() {
     
 }

@@ -21,7 +21,7 @@ public:
     virtual ~MemoryAllocator();
     bool AllocatePageFrames(uint32_t count, std::vector<uint32_t> &page_frames); 
     bool FreePageFrames(uint32_t count, std::vector<uint32_t> &page_frames);
-    uint32_t get_page_frames_free() const;
+    uint32_t get_page_frames_free();
 private:
     std::vector<uint8_t> mem;
     // Index of total number of page frames in mem vector
