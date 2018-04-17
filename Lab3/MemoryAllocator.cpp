@@ -69,18 +69,24 @@ bool MemoryAllocator::AllocatePageFrames(uint32_t count, std::vector<uint32_t> &
 bool MemoryAllocator::FreePageFrames(uint32_t count, std::vector<uint32_t> &page_frames) {
     if (!count <= page_frames.size()) return false;
     else {
-        uint32_t old_head, new_address, index, page_size = 0x1000;
+        uint32_t old_head, new_address, index, old_size, new_size;
         for (int i = 0; i < count; i++) {
             memcpy(&old_head, &mem[free_list_head], sizeof(uint32_t));
-            index = page_frames.size() - 1 - page_size;
+            index = page_frames.size() - 1;
             new_address = page_frames[index];
             memcpy(&mem[free_list_head], &new_address, sizeof(uint32_t));
-            
+            memcpy(&mem[new_address], &old_head, sizeof(uint32_t));
+            memcpy(&old_size, &mem[pf_free], sizeof(uint32_t));
+            new_size = old_size + 1;
+            memcpy(&mem[pf_free], &new_size, sizeof(uint32_t));
+            page_frames.pop_back();
         }
         return true;
     }
 }
 
 uint32_t MemoryAllocator::get_page_frames_free() {
-    
+    uint32_t me;
+    memcpy(&me, &mem[pf_free], sizeof(uint32_t));
+    return me;
 }
