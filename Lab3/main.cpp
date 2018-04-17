@@ -9,6 +9,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <iostream>
 
 #include "MemoryAllocator.h"
 
@@ -20,20 +21,47 @@
  */
 int main(int argc, char** argv) {
     std::string my_file = argv[1];
+    MemoryAllocator* ma;
+    
+    std::vector<uint32_t> page_frames;
+    
     std::ifstream ifs;
+    std::string cur_line;
+    
     ifs.open(my_file);
     if (!ifs) {
         throw std::runtime_error("File '" + my_file + "' could not open properly");
     }
+    
     if (ifs.is_open()) {
-        std::string cur_line;
-        uint8_t mem_size;
+        uint32_t mem_size;
+        getline(ifs, cur_line);
+        std::istringstream line(cur_line);
+        line >> std::hex >> mem_size;
+        std::cout << "#" << std::to_string(mem_size) << std::endl;
+        ma = new MemoryAllocator(mem_size);
+        
         while (!ifs.eof()) {
+            uint32_t arg;
             getline(ifs, cur_line);
             std::istringstream line(cur_line);
-            line >> std::hex >> mem_size;
+            line >> std::hex >> arg;
             
-            MemoryAllocator(mem_size);
+            if(arg == 0) {
+                // dealloc
+                line >> std::hex >> arg;
+                std::cout << "#0 " << std::to_string(arg) << std::endl;
+                ma->FreePageFrames(arg, page_frames);
+            } else if(arg == 1) {
+                // alloc
+                line >> std::hex >> arg;
+                std::cout << "#1 " << std::to_string(arg) << std::endl;
+                ma->AllocatePageFrames(arg, page_frames);
+            } else if(arg == 2) {
+                // print context
+                std::cout << "#2" << std::endl;
+                
+            }            
         }
     }
     
