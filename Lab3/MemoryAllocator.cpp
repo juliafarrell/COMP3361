@@ -17,7 +17,8 @@ MemoryAllocator::MemoryAllocator(uint32_t num_pages) {
     mem.resize(num_pages * 65536);
     memcpy(&mem[pf_total], &num_pages, sizeof(uint32_t));
     // first page reserved for memory allocator
-    memcpy(&mem[pf_free], &num_pages - 1, sizeof(uint32_t));
+    uint32_t num_pages_wo_reserved = num_pages - 1;
+    memcpy(&mem[pf_free], &num_pages_wo_reserved, sizeof(uint32_t));
     uint32_t page_size = 0x10000;
     memcpy(&mem[free_list_head], &page_size, sizeof(uint32_t));
     
@@ -67,7 +68,7 @@ bool MemoryAllocator::AllocatePageFrames(uint32_t count, std::vector<uint32_t> &
 }
 
 bool MemoryAllocator::FreePageFrames(uint32_t count, std::vector<uint32_t> &page_frames) {
-    if (!count <= page_frames.size()) return false;
+    if (!(count <= page_frames.size())) return false;
     else {
         uint32_t old_head, new_address, index, old_size, new_size;
         for (int i = 0; i < count; i++) {
@@ -79,10 +80,33 @@ bool MemoryAllocator::FreePageFrames(uint32_t count, std::vector<uint32_t> &page
             memcpy(&old_size, &mem[pf_free], sizeof(uint32_t));
             new_size = old_size + 1;
             memcpy(&mem[pf_free], &new_size, sizeof(uint32_t));
-            page_frames.pop_back();
+            page_frames.pop_back();            
         }
         return true;
     }
+}
+
+std::vector<uint32_t> MemoryAllocator::get_page_frames_free_addresses() {
+    std::vector<uint32_t> free_addresses;
+    uint32_t free_page, count;
+    
+    memcpy(&count, &mem[pf_free], sizeof(uint32_t));
+    
+    if(count == 0) return free_addresses;
+    
+    // get the first free page
+    memcpy(&free_page, &mem[free_list_head], sizeof(uint32_t));
+    free_addresses.push_back(free_page);
+    
+    for(int i = 1; i < count; i++) {
+        // get the next free page in the list
+        memcpy(&free_page, &mem[free_page], sizeof(uint32_t));
+        
+        // add the page to the vector
+        free_addresses.push_back(free_page);
+    }
+    
+    return free_addresses;
 }
 
 uint32_t MemoryAllocator::get_page_frames_free() {

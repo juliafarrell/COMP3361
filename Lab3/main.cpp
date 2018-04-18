@@ -51,16 +51,31 @@ int main(int argc, char** argv) {
                 // dealloc
                 line >> std::hex >> arg;
                 std::cout << "#0 " << std::to_string(arg) << std::endl;
-                ma->FreePageFrames(arg, page_frames);
+                if(ma->FreePageFrames(arg, page_frames))
+                    std::cout << "T ";
+                else
+                    std::cout << "F ";
+                
+                std::cout << ma->get_page_frames_free() << std::endl;
             } else if(arg == 1) {
                 // alloc
                 line >> std::hex >> arg;
                 std::cout << "#1 " << std::to_string(arg) << std::endl;
-                ma->AllocatePageFrames(arg, page_frames);
+                
+                if(ma->AllocatePageFrames(arg, page_frames))
+                    std::cout << "T ";
+                else
+                    std::cout << "F ";
+                
+                std::cout << ma->get_page_frames_free() << std::endl;
             } else if(arg == 2) {
                 // print context
+                std::vector<uint32_t> free_pages = ma->get_page_frames_free_addresses();
                 std::cout << "#2" << std::endl;
-                
+                for(int i = 0; i < free_pages.size(); i++) {
+                    std::cout << " " << std::hex << free_pages[i];
+                }
+                std::cout << std::endl << std::dec;
             }            
         }
     }

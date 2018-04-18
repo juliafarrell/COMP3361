@@ -21,6 +21,7 @@ public:
     virtual ~MemoryAllocator();
     bool AllocatePageFrames(uint32_t count, std::vector<uint32_t> &page_frames); 
     bool FreePageFrames(uint32_t count, std::vector<uint32_t> &page_frames);
+    std::vector<uint32_t> get_page_frames_free_addresses();
     uint32_t get_page_frames_free();
 private:
     std::vector<uint8_t> mem;
