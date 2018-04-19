@@ -1,25 +1,28 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/* 
+ * COMP3361 Operating Systems 
+ * Lab 2 Sample Solution
+ * 
  * File:   main.cpp
- * Author: julia
+ * Author: Mike Goss <mikegoss@cs.du.edu>
  *
- * Created on April 19, 2018, 10:32 AM
  */
 
+#include "Process.h"
 #include <cstdlib>
-
-using namespace std;
+#include <iostream>
 
 /*
  * 
  */
 int main(int argc, char** argv) {
-
-    return 0;
+  // Use command line argument as file name
+  if (argc != 2) {
+    std::cerr << "usage: Lab2 trace_file\n";
+    exit(1);
+  }
+  
+  Process trace(argv[1]);
+  trace.Run();
+  return 0;
 }
 
