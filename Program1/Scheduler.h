@@ -11,7 +11,10 @@
 #include <string>
 #include <vector>
 
-struct process {std::string name; float arrival_time; std::vector<float> args;};
+struct process {std::string name; 
+                float arrival_time; 
+                float prediction_value; 
+                std::vector<float> args;};
 
 class Scheduler {
 public:

@@ -6,6 +6,7 @@
  */
 
 #include "Scheduler.h"
+#include <stdexcept>
 
 Scheduler::Scheduler() {
     throw std::runtime_error("constructor must specify block_duration and prediction_weight");
@@ -22,8 +23,8 @@ Scheduler::Scheduler(const Scheduler& orig) {
 Scheduler::~Scheduler() {
 }
 
-Scheduler::operator =(const Scheduler orig) {
+Scheduler& Scheduler::operator =(const Scheduler orig) {
 }
 
-Scheduler::operator =(Scheduler&& orig) {
+Scheduler& Scheduler::operator =(Scheduler&& orig) {
 }

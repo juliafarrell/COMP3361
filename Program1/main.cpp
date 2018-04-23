@@ -12,6 +12,8 @@
 #include <vector>
 #include <iostream>
 
+#include "Scheduler.h"
+
 using namespace std;
 
 /*
@@ -41,7 +43,7 @@ int main(int argc, char** argv) {
     
     // if file opens successfully
     // 1. make a scheduler
-    s = new Scheduler(block_duration, prediction_weight);
+    Scheduler* s = new Scheduler(block_duration, prediction_weight);
     
     // 2. store processes in structs line by line and send to the scheduler 
     struct process p;
@@ -59,7 +61,7 @@ int main(int argc, char** argv) {
         while (line_stream >> exec_time) { // returns false if end of line or fails to convert to float
             actual_exec_times.push_back(exec_time);
         }
-        p = {p_name, time, actual_exec_times};
+        process p = {p_name, time, 0, actual_exec_times};
     }
     
     
