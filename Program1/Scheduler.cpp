@@ -126,20 +126,6 @@ void Scheduler::run() {
     }
     float avg = calculate_avg_turnaround();
     print_done(avg);
-
-//    int counter = 0;
-//    std::cout << "READY";
-//    while (ready_queue.size() > 0) {
-//        std::cout << counter <<"\n\tname: " << ready_queue.top().name 
-//                << "\tpred value: " << ready_queue.top().prediction_value <<"\n";
-//        ready_queue.pop();
-//        counter++;
-//    }
-//    std::cout << "BLOCKED";
-//    while (blocked_queue.size() > 0) {
-//        std::cout << "\t name : " << blocked_queue.front().name;
-//        blocked_queue.pop_back();
-//    }
 }
 
 bool Scheduler::still_running() {
@@ -213,15 +199,17 @@ void Scheduler::update_blocked_queue() {
         
         while (searching) {
             if (blocked_queue.size() == 0) break;
+            // should be lowest value?
             p = blocked_queue.front();
             if (p.time_blocked + this->block_duration < this->simulated_timer) {
                 this->ready_queue.push(p);
-                this->blocked_queue.pop_back();
+                this->blocked_queue.erase(blocked_queue.begin());
             }
             else {
                 if (p.new_process && p.arrival_time < this->simulated_timer) {
+                    std::cout << "new process";
                     this->ready_queue.push(p);
-                    this->blocked_queue.pop_back();
+                    this->blocked_queue.erase(blocked_queue.begin());
                 }
                 else {
                     searching = false;

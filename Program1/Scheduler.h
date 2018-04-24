@@ -34,12 +34,12 @@ struct process {
 class Scheduler {
 public:
     // Rule of 5
-    Scheduler();                                // constructor
+    Scheduler();                                 // constructor
     Scheduler(float block, float weight);
-    Scheduler(const Scheduler& orig);           // copy constructor
-    virtual ~Scheduler();                       // destructor
+    Scheduler(const Scheduler& orig);            // copy constructor
+    virtual ~Scheduler();                        // destructor
     Scheduler& operator=(const Scheduler& orig); // copy assignment
-    Scheduler& operator=(Scheduler&& orig);     // move assignment
+    Scheduler& operator=(Scheduler&& orig);      // move assignment
     
     void add_process(process p);
     void run();
