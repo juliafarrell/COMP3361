@@ -52,13 +52,16 @@ void Scheduler::add_process(process p) {
 }
 
 void Scheduler::run() {
-    // 1. pull processes into ready queue
+    // 1. pull processes into ready queue if arrived
     arrive_proccesses();
+    
     // 2. while there are processes in ready and/or blocked queues
     process cur_process;
     float time_elapsed;
     while (still_running()) {
+        // pull processes into ready queue if arrived
         arrive_proccesses();
+        
         // if there are processes in ready
         if (!ready_queue.empty()) {
             // get the next shortest process that is ready
