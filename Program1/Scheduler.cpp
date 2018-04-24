@@ -58,9 +58,14 @@ Scheduler& Scheduler::operator =(const Scheduler orig) {
     ready_queue = orig.ready_queue;
     blocked_queue = orig.blocked_queue;
 }
-
+// TODO: What is the difference between copy and move implementation?
 Scheduler& Scheduler::operator =(Scheduler&& orig) {
-    // TODO: implement me
+    block_duration = orig.block_duration;
+    prediction_weight = orig.prediction_weight;
+    simulated_timer = orig.simulated_timer;
+    process_list = orig.process_list;
+    ready_queue = orig.ready_queue;
+    blocked_queue = orig.blocked_queue;
 }
 
 void Scheduler::add_process(process p) {
@@ -94,10 +99,13 @@ void Scheduler::run() {
                 cur_process.time_blocked = this->simulated_timer;
                 blocked_queue.push(cur_process);
             }
-            // if not, add to blocked queue
+            // print
+            
         } else {
             // if there are no processes ready,
-            // CPU is idle
+            // CPU is idle, calculate time
+            
+            // print
             
         }
     }
