@@ -52,6 +52,7 @@ int main(int argc, char** argv) {
     float time;
     while (!file.eof()) {
         getline(file, line);
+        if (line.empty()) break;
         // make string stream for the line to read in the process
         istringstream line_stream(line);
                           // process name from line

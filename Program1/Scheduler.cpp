@@ -144,12 +144,17 @@ float Scheduler::update_prediction_value(process p) {
 }
 
 void Scheduler::arrive_proccesses() {
-    for (int i = 0; i < process_list.size(); i++) {
-        if(this->simulated_timer >= process_list[i].arrival_time) {
-            ready_queue.push(process_list[i]);
-            process_list.erase(process_list.begin() + i);
-            i--;
+    if (process_list.size() == 0) return;
+    else {
+        for (int i = process_list.size() - 1; i >= 0; i--) {
+            if (process_list[i].arrival_time > this->simulated_timer) {
+                this->blocked_queue.push_back(process_list[i]);
+            } 
+            else {
+                this->ready_queue.push(process_list[i]);
+            }
         }
+        process_list.clear();
     }
 }
 
