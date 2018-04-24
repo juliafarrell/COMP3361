@@ -54,6 +54,8 @@ private:
     // because '<' operator in struct, ordered in reverse on prediction time
     // ready processes, stores the struct
     std::priority_queue<process> ready_queue;
+    // average turnaround times stored here when they complete
+    std::vector<float> avg_turnaround;
     // returns the actual execution time of the last executed process
     float update_prediction_value(process p);
     // checks to see if blocked and ready queue are empty (false if both empty)
@@ -73,13 +75,14 @@ private:
     // print functions for idle and process completion
     void print_process(process p, float exec_time, char status);
     void print_idle(float idle_time);
+    void print_done(float avg_turnarounds);
     // insertion sort for blocked vector on blocked_time
     // (likely that it's already sorted, so O(n) will by typical)
     void sort_blocked(std::vector<process> &p);
     // returns time the CPU is idle due to blocks
     // assumes blocked list is sorted & nonempty
     float get_idle_time();
-    
+    float calculate_avg_turnaround(std::vector<float> t);
 };
 
 #endif /* SCHEDULER_H */

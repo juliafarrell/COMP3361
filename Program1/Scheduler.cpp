@@ -105,14 +105,17 @@ void Scheduler::run() {
             // if process completes, print with code 'T'
             else {
                 print_process(cur_process, time_elapsed, 'T');
+                this->avg_turnaround.push_back(cur_process);
             }
             
-        } else {
+        } else if (!this->blocked_queue.empty()) {
             // if there are no processes ready,
             // CPU is idle, calculate time
             time_elapsed = get_idle_time(); 
             // print
             print_idle(time_elapsed);
+        } else {
+            print_done();
         }
     }
 }
@@ -182,6 +185,10 @@ void Scheduler::print_idle(float idle_time) {
     std::cout << this->simulated_timer << "\t(IDLE)\t" << idle_time << "\tI";
 }
 
+void Scheduler::print_done(float avg_turnaround) {
+    std::cout << this->simulated_timer << "\t(DONE)\t" << avg_turnaround << "\tI";
+}
+
 void Scheduler::sort_blocked(std::vector<process> &p) {
     // insertion sort, smallest first
     int j;
@@ -199,4 +206,8 @@ void Scheduler::sort_blocked(std::vector<process> &p) {
 
 float Scheduler::get_idle_time() {
     return this->blocked_queue[0].time_blocked + this->block_duration;
+}
+
+float Scheduler::calculate_avg_turnaround(std::vector<float> t) {
+    
 }
