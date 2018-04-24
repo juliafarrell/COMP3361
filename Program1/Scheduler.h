@@ -10,6 +10,7 @@
 
 #include <string>
 #include <vector>
+#include <queue>
 
 struct process {
     std::string name; 
