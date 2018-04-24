@@ -63,6 +63,8 @@ private:
     bool process_blocks(process p);
     // update the global timer based on execution time
     void update_time(float time_elapsed);
+    // checks to see if a process completes: true if args.size is zero
+    bool process_completed(process p);
 };
 
 #endif /* SCHEDULER_H */

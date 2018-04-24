@@ -63,16 +63,19 @@ void Scheduler::run() {
         // if there are processes in ready
         if (!ready_queue.empty()) {
             // get the next shortest process that is ready
+            // this pops it off the ready queue
             cur_process = get_next_process();
             // update its prediction value
             time_elapsed = update_prediction_value(cur_process);
             // increment the global timer by 'time elapsed' 
             update_time(time_elapsed);
-            // check to see if process is completes
-            
+            // if process doesn't complete, add to blocked list
+            if (!process_completed(cur_process)) {
+                blocked_queue.push(cur_process);
+            }
             // if not, add to blocked queue
         } else {
-        // if there are no processes ready,
+            // if there are no processes ready,
             // CPU is idle
             
         }
@@ -106,4 +109,9 @@ process Scheduler::get_next_process() {
 
 void Scheduler::update_time(float time_elapsed) {
     this->simulated_timer += time_elapsed;
+}
+
+bool Scheduler::process_completed(process p) {
+    if (p.args.size() == 0) return true;
+    else return false;
 }
