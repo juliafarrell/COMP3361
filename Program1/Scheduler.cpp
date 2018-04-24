@@ -251,11 +251,13 @@ void Scheduler::sort_blocked(std::vector<process> &p) {
 }
 
 float Scheduler::get_idle_time() {
-    if (this->blocked_queue.size() >= 2) {
-       float first_to_last = blocked_queue[0].time_blocked 
-       - blocked_queue[blocked_queue.size()-1].time_blocked;
-       if (first_to_last > block_duration) {
-           return first_to_last;
+    int size = this->blocked_queue.size();
+    if (size >= 2) {
+       float last_minus_first = blocked_queue[size-1].time_blocked 
+       - blocked_queue[0].time_blocked;
+       if (last_minus_first < block_duration) {
+           return blocked_queue[0].time_blocked + block_duration 
+                   - blocked_queue[size-1].time_blocked;
        } else return block_duration;
     }
     else {
