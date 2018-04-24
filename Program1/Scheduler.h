@@ -11,10 +11,16 @@
 #include <string>
 #include <vector>
 
-struct process {std::string name; 
-                float arrival_time; 
-                float prediction_value; 
-                std::vector<float> args;};
+struct process {
+    std::string name; 
+    float arrival_time; 
+    float prediction_value; 
+    std::vector<float> args;
+    
+    bool operator<(const process& other_process) const {
+        return prediction_value < other_process.prediction_value;
+    }
+};
 
 class Scheduler {
 public:
@@ -31,9 +37,9 @@ private:
     float block_duration;
     float prediction_weight;
     // blocked processes, stores the struct
-    std::vector<process> blocked;
+    std::priority_queue<process> blocked;
     // ready processes, stores the struct
-    std::vector<process> ready;
+    std::priority_queue<process> ready;
 };
 
 #endif /* SCHEDULER_H */
