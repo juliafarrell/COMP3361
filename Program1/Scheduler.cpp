@@ -72,7 +72,7 @@ void Scheduler::run() {
     int debugging = 0;
     
 //    while (still_running()) {
-    while (debugging < 20) {
+    while (debugging < 50) {
         start_time = this->simulated_timer;
         
         // pull processes into ready queue if arrived
@@ -117,6 +117,9 @@ void Scheduler::run() {
 
                 // update global timer
                 this->simulated_timer = this->simulated_timer + time_elapsed;
+                
+                // update blocked queue
+                update_blocked_queue();
             } 
             else {
                 float avg = calculate_avg_turnaround();
@@ -125,19 +128,19 @@ void Scheduler::run() {
         }
         debugging++;
     }
-    int counter = 0;
-    std::cout << "READY";
-    while (ready_queue.size() > 0) {
-        std::cout << counter <<"\n\tname: " << ready_queue.top().name 
-                << "\tpred value: " << ready_queue.top().prediction_value <<"\n";
-        ready_queue.pop();
-        counter++;
-    }
-    std::cout << "BLOCKED";
-    while (blocked_queue.size() > 0) {
-        std::cout << "\t name : " << blocked_queue.front().name;
-        blocked_queue.pop_back();
-    }
+//    int counter = 0;
+//    std::cout << "READY";
+//    while (ready_queue.size() > 0) {
+//        std::cout << counter <<"\n\tname: " << ready_queue.top().name 
+//                << "\tpred value: " << ready_queue.top().prediction_value <<"\n";
+//        ready_queue.pop();
+//        counter++;
+//    }
+//    std::cout << "BLOCKED";
+//    while (blocked_queue.size() > 0) {
+//        std::cout << "\t name : " << blocked_queue.front().name;
+//        blocked_queue.pop_back();
+//    }
 }
 
 bool Scheduler::still_running() {
@@ -167,7 +170,6 @@ float Scheduler::update_prediction_value(process &p) {
 }
 
 void Scheduler::arrive_proccesses() {
-    std::cout << "ARRIVE PROCESSESS\n";
     if (process_list.size() == 0) return;
     else {
         for (int i = process_list.size() - 1; i >= 0; i--) {
@@ -183,8 +185,11 @@ void Scheduler::arrive_proccesses() {
 }
 
 process Scheduler::get_next_process() {
+//    std::cout << "\nGNP\n";
     process shortest = ready_queue.top();
-    ready_queue.pop();
+//    std::cout << "\tshortest name: " << shortest.name << "\n";
+    this->ready_queue.pop();
+//    std::cout << "\tnext shortest: " << ready_queue.top().name << "\n\n";
     return shortest;
 }
 
