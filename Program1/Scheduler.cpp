@@ -71,8 +71,8 @@ void Scheduler::run() {
     float start_time;
     int debugging = 0;
     
-//    while (still_running()) {
-    while (debugging < 50) {
+    while (still_running()) {
+//    while (debugging < 50) {
         start_time = this->simulated_timer;
         
         // pull processes into ready queue if arrived
@@ -121,13 +121,12 @@ void Scheduler::run() {
                 // update blocked queue
                 update_blocked_queue();
             } 
-            else {
-                float avg = calculate_avg_turnaround();
-                print_done(avg);
-            }
         }
         debugging++;
     }
+    float avg = calculate_avg_turnaround();
+    print_done(avg);
+
 //    int counter = 0;
 //    std::cout << "READY";
 //    while (ready_queue.size() > 0) {
@@ -144,7 +143,7 @@ void Scheduler::run() {
 }
 
 bool Scheduler::still_running() {
-    if (!ready_queue.empty() || !blocked_queue.empty()) return true;
+    if (ready_queue.size() != 0 || blocked_queue.size() != 0) return true;
     else return false;
 }
 
@@ -245,7 +244,7 @@ void Scheduler::print_idle(float idle_time) {
 }
 
 void Scheduler::print_done(float avg_turnaround) {
-    std::cout << this->simulated_timer << "\t(DONE)\t" << avg_turnaround << "\tI\n";
+    std::cout << this->simulated_timer << "\t(DONE)\t" << avg_turnaround << "\n";
 }
 
 void Scheduler::sort_blocked(std::vector<process> &p) {
