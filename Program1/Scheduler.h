@@ -75,8 +75,9 @@ private:
     void print_idle(float idle_time);
     // insertion sort for blocked vector on blocked_time
     // (likely that it's already sorted, so O(n) will by typical)
-    void sort_blocked();
+    void sort_blocked(std::vector<process> &p);
     // returns time the CPU is idle due to blocks
+    // assumes blocked list is sorted & nonempty
     float get_idle_time();
     
 };
