@@ -28,3 +28,11 @@ Scheduler& Scheduler::operator =(const Scheduler orig) {
 
 Scheduler& Scheduler::operator =(Scheduler&& orig) {
 }
+
+float Scheduler::calculate_process_prediction_value(float last_execution_time, process p) {
+    // W = w i
+    // w = w i-1
+    // W = a*w + (1 - a) * T
+    return this->prediction_weight * p.prediction_value 
+            + (1 - this->prediction_weight) * last_execution_time;
+}

@@ -41,6 +41,7 @@ private:
     std::priority_queue<process> blocked;
     // ready processes, stores the struct
     std::priority_queue<process> ready;
+    float calculate_process_prediction_value(float last_execution_time, process p);
 };
 
 #endif /* SCHEDULER_H */
