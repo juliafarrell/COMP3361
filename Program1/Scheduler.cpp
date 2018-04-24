@@ -58,16 +58,16 @@ void Scheduler::run() {
     }
     // 2. while there are processes in ready and/or blocked queues
     process cur_process;
+    float time_elapsed;
     while (still_running()) {
         // if there are processes in ready
         if (!ready_queue.empty()) {
             // get the next shortest process that is ready
             cur_process = get_next_process();
             // update its prediction value
-            update_prediction_value(cur_process);
+            time_elapsed = update_prediction_value(cur_process);
             // increment the global timer by 'time elapsed' 
-            // (block time if full, exec time if under)
-            
+            update_time(time_elapsed);
             // check to see if process is completes
             
         } else {
@@ -83,7 +83,7 @@ bool Scheduler::still_running() {
     else return false;
 }
 
-void Scheduler::update_prediction_value(process p) {
+float Scheduler::update_prediction_value(process p) {
     // get last execution time (head of args vector)
     if (p.args.size() == 0) {
         std::cerr << "process completed but still trying to run";
@@ -94,10 +94,15 @@ void Scheduler::update_prediction_value(process p) {
     // update prediction value for the process
     p.prediction_value = this->prediction_weight * p.prediction_value 
             + (1 - this->prediction_weight) * last_execution_time;
+    return last_execution_time;
 }
 
 process Scheduler::get_next_process() {
     process shortest = ready_queue.top();
     ready_queue.pop();
     return shortest;
+}
+
+void update_time() {
+    
 }
