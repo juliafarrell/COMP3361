@@ -56,6 +56,8 @@ private:
     void update_prediction_value(process p);
     // checks to see if blocked and ready queue are empty (false if both empty)
     bool still_running();
+    // checks if any processes have arrived
+    void arrive_proccesses();
     // gets the shortest process from the ready queue, assuming non-empty ready
     process get_next_process();
     // determines if the process blocks when trying to finish its block

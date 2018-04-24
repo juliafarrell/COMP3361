@@ -53,12 +53,11 @@ void Scheduler::add_process(process p) {
 
 void Scheduler::run() {
     // 1. pull processes into ready queue
-    for (int i = 0; i < process_list.size(); i++) {
-        ready_queue.push(process_list[i]);
-    }
+    arrive_proccesses();
     // 2. while there are processes in ready and/or blocked queues
     process cur_process;
     while (still_running()) {
+        arrive_proccesses();
         // if there are processes in ready
         if (!ready_queue.empty()) {
             // get the next shortest process that is ready
@@ -94,6 +93,16 @@ void Scheduler::update_prediction_value(process p) {
     // update prediction value for the process
     p.prediction_value = this->prediction_weight * p.prediction_value 
             + (1 - this->prediction_weight) * last_execution_time;
+}
+
+void Scheduler::arrive_proccesses() {
+    for (int i = 0; i < process_list.size(); i++) {
+        if(this->simulated_timer >= process_list[i].arrival_time) {
+            ready_queue.push(process_list[i]);
+            process_list.erase(process_list.begin() + i);
+            i--;
+        }
+    }
 }
 
 process Scheduler::get_next_process() {
