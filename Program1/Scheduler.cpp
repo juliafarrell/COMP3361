@@ -79,12 +79,16 @@ void Scheduler::run() {
     // 2. while there are processes in ready and/or blocked queues
     process cur_process;
     float time_elapsed;
-    while (still_running()) {
+    int debugging = 0;
+//    while (still_running()) {
+    while (debugging < 50) {
         // pull processes into ready queue if arrived
         arrive_proccesses();
-        
         // if there are processes in ready
         if (!ready_queue.empty()) {
+            std::cout << "DEBUG: rq not empty";
+            std::cout << "  ready_queue.size() = " << ready_queue.size() << "\n";
+            std::cout << "  blocked_queue.size() = " << blocked_queue.size() << "\n\n";
             // get the next shortest process that is ready
             // this pops it off the ready queue
             cur_process = get_next_process();
@@ -109,15 +113,24 @@ void Scheduler::run() {
             }
             
         } else if (!this->blocked_queue.empty()) {
+            std::cout << "DEBUG: bq not empty";
+            std::cout << "  ready_queue.size() = " << ready_queue.size() << "\n";
+            std::cout << "  blocked_queue.size() = " << blocked_queue.size() << "\n\n";
             // if there are no processes ready,
             // CPU is idle, calculate time
             time_elapsed = get_idle_time(); 
             // print
             print_idle(time_elapsed);
+            // update global timer
+            this->simulated_timer = this->simulated_timer + time_elapsed;
         } else {
+            std::cout << "DEBUG: done";
+            std::cout << "  ready_queue.size() = " << ready_queue.size() << "\n";
+            std::cout << "  blocked_queue.size() = " << blocked_queue.size() << "\n\n";
             float avg = calculate_avg_turnaround();
             print_done(avg);
         }
+        debugging++;
     }
 }
 
@@ -179,15 +192,15 @@ void Scheduler::print_process(process p, float exec_time, char status) {
             p.name << "\t" << 
             exec_time << "\t" <<
             status << "\t" <<
-            p.prediction_value;
+            p.prediction_value << "\n";
 }
 
 void Scheduler::print_idle(float idle_time) {
-    std::cout << this->simulated_timer << "\t(IDLE)\t" << idle_time << "\tI";
+    std::cout << this->simulated_timer << "\t(IDLE)\t" << idle_time << "\tI\n";
 }
 
 void Scheduler::print_done(float avg_turnaround) {
-    std::cout << this->simulated_timer << "\t(DONE)\t" << avg_turnaround << "\tI";
+    std::cout << this->simulated_timer << "\t(DONE)\t" << avg_turnaround << "\tI\n";
 }
 
 void Scheduler::sort_blocked(std::vector<process> &p) {
