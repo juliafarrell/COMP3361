@@ -48,12 +48,13 @@ int main(int argc, char** argv) {
     // 2. store processes in structs line by line and send to the scheduler 
     struct process p;
     string line;  // text line read
+    string p_name; 
     float time;
     while (!file.eof()) {
         getline(file, line);
         // make string stream for the line to read in the process
         istringstream line_stream(line);
-        string p_name;                   // process name from line
+                          // process name from line
         line_stream >> p_name;
         line_stream >> time;
         queue<float> actual_exec_times; // execution times (actual) from line
@@ -62,13 +63,9 @@ int main(int argc, char** argv) {
             actual_exec_times.push(exec_time);
         }
         process p = {p_name, time, 0, actual_exec_times};
-        
         s->add_process(p);
     }
-    
-    
-    
-    
+    s->run();
     return 0;
 }
 

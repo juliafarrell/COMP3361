@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <list>
+#include <iostream>
 
 struct process {
     std::string name; 
@@ -38,16 +40,26 @@ public:
     Scheduler& operator=(Scheduler&& orig);     // move assignment
     
     void add_process(process p);
-    
+    void run();
     
 private:
     float block_duration;
     float prediction_weight;
+    float simulated_timer;
+    // stores all processes
+    std::vector<process> process_list;
     // blocked processes, stores the struct
-    std::priority_queue<process> blocked;
+    // because '<' operator in struct, ordered in reverse
+    std::priority_queue<process> blocked_queue;
     // ready processes, stores the struct
-    std::priority_queue<process> ready;
-    float calculate_process_prediction_value(float last_execution_time, process p);
+    std::priority_queue<process> ready_queue;
+    void update_prediction_value(process p);
+    // checks to see if blocked and ready queue are empty (false if both empty)
+    bool still_running();
+    // gets the shortest process from the ready queue, assuming non-empty ready
+    process get_next_process();
+    // determines if the process blocks when trying to finish its block
+    bool process_blocks(process p);
 };
 
 #endif /* SCHEDULER_H */
