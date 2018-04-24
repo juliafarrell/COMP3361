@@ -44,7 +44,7 @@ Scheduler::~Scheduler() {
         ready_queue.pop();
     }
     while (!blocked_queue.empty()) {
-        blocked_queue.pop();
+        blocked_queue.pop_back();
     }
     process_list.clear();
     // TODO: check, is this right?
@@ -97,16 +97,22 @@ void Scheduler::run() {
             if (!process_completed(cur_process)) {
                 // update block time of current process
                 cur_process.time_blocked = this->simulated_timer;
-                blocked_queue.push(cur_process);
+                blocked_queue.push_back(cur_process);
+                // make sure blocked queue in ascending blocked_time order
+                sort_blocked();
+                print_process(cur_process, time_elapsed, 'B');
             }
-            // print
+            // if process completes, print with code 'T'
+            else {
+                print_process(cur_process, time_elapsed, 'T');
+            }
             
         } else {
             // if there are no processes ready,
             // CPU is idle, calculate time
-            
+            time_elapsed = 0; // IMPLEMENT ME
             // print
-            
+            print_idle(time_elapsed);
         }
     }
 }
@@ -158,16 +164,39 @@ bool Scheduler::process_completed(process p) {
 void Scheduler::update_blocked_queue() {
     if (blocked_queue.size() == 0) return;
     else {
-        bool checking = true;
-        while (checking) {
-            process p = blocked_queue.top();
-            if ((this->simulated_timer) > (p.time_blocked + this->block_duration)) {
-                blocked_queue.pop();
-                ready_queue.push(p);
-            } 
-            else {
-                checking = false;
-            }
-        }
+        // sort queue by block_time, smallest first
+        sort_blocked();
+        // then pop off if you can
     }
+}
+
+void Scheduler::print_process(process p, float exec_time, char status) {
+    std::cout << this->simulated_timer << "\t" <<
+            p.name << "\t" << 
+            exec_time << "\t" <<
+            status << "\t" <<
+            p.prediction_value;
+}
+
+void Scheduler::print_idle(float idle_time) {
+    std::cout << this->simulated_timer << "\t(IDLE)\t" << idle_time << "\tI";
+}
+
+void Scheduler::sort_blocked(std::vector<process> &p, int n) {
+    // insertion sort, smallest first
+    int j;
+    process tmp;
+    for (int i = 1; i < n; i++) {
+        j = i;
+        tmp = p[i];
+        while (j > 0 && tmp.time_blocked < p[j-1].time_blocked) {
+            p[j] = p[j-1];
+            j--;
+        }
+        p[j] = tmp;
+    }
+}
+
+float Scheduler::get_idle_time() {
+    
 }

@@ -50,8 +50,8 @@ private:
     // stores all processes
     std::vector<process> process_list;
     // blocked processes, stores the struct
-    // because '<' operator in struct, ordered in reverse
-    std::priority_queue<process> blocked_queue;
+    std::vector<process> blocked_queue;
+    // because '<' operator in struct, ordered in reverse on prediction time
     // ready processes, stores the struct
     std::priority_queue<process> ready_queue;
     // returns the actual execution time of the last executed process
@@ -70,6 +70,15 @@ private:
     bool process_completed(process p);
     // updates the blocked queue based on (preseumably new) time elapsed value
     void update_blocked_queue();
+    // print functions for idle and process completion
+    void print_process(process p, float exec_time, char status);
+    void print_idle(float idle_time);
+    // insertion sort for blocked vector on blocked_time
+    // (likely that it's already sorted, so O(n) will by typical)
+    void sort_blocked();
+    // returns time the CPU is idle due to blocks
+    float get_idle_time();
+    
 };
 
 #endif /* SCHEDULER_H */
