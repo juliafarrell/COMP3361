@@ -19,6 +19,10 @@ struct process {
     std::vector<float> args;
     
     bool operator<(const process& other_process) const {
+        if(prediction_value == other_process.prediction_value) {
+            return arrival_time < other_process.arrival_time;
+        }
+        
         return prediction_value < other_process.prediction_value;
     }
 };
