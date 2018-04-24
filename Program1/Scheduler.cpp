@@ -105,7 +105,7 @@ void Scheduler::run() {
             // if process completes, print with code 'T'
             else {
                 print_process(cur_process, time_elapsed, 'T');
-                this->avg_turnaround.push_back(cur_process);
+                this->avg_turnaround.push_back(simulated_timer);
             }
             
         } else if (!this->blocked_queue.empty()) {
@@ -115,7 +115,8 @@ void Scheduler::run() {
             // print
             print_idle(time_elapsed);
         } else {
-            print_done();
+            float avg = calculate_avg_turnaround();
+            print_done(avg);
         }
     }
 }
@@ -218,6 +219,11 @@ float Scheduler::get_idle_time() {
     return this->blocked_queue[0].time_blocked + this->block_duration;
 }
 
-float Scheduler::calculate_avg_turnaround(std::vector<float> t) {
-    
+float Scheduler::calculate_avg_turnaround() {
+    int sum = 0, size = this->avg_turnaround.size();
+    while (!this->avg_turnaround.empty()) {
+        sum += this->avg_turnaround.front();
+        this->avg_turnaround.pop_back();
+    }
+    return sum / size;
 }
