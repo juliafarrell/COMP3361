@@ -251,13 +251,23 @@ void Scheduler::sort_blocked(std::vector<process> &p) {
 }
 
 float Scheduler::get_idle_time() {
-    return this->blocked_queue[0].time_blocked + this->block_duration;
+    if (this->blocked_queue.size() >= 2) {
+       float first_to_last = blocked_queue[0].time_blocked 
+       - blocked_queue[blocked_queue.size()-1].time_blocked;
+       if (first_to_last > block_duration) {
+           return first_to_last;
+       } else return block_duration;
+    }
+    else {
+        return block_duration;
+    }
+    
 }
 
 float Scheduler::calculate_avg_turnaround() {
     int sum = 0, size = this->avg_turnaround.size();
     while (!this->avg_turnaround.empty()) {
-        sum += this->avg_turnaround.front();
+        sum += this->avg_turnaround.back();
         this->avg_turnaround.pop_back();
     }
     return sum / size;
