@@ -183,7 +183,17 @@ void Scheduler::update_blocked_queue() {
     else {
         // sort queue by block_time, smallest first
         sort_blocked(blocked_queue);
-        // then pop off if you can
+        
+        // then if its done blocking, pop off
+        for(int i = 0; i < this->blocked_queue.size(); i++) {
+            if(this->blocked_queue[i].time_blocked + this->block_duration > this->simulated_timer) {
+                this->ready_queue.push(this->blocked_queue[i]);
+                this->blocked_queue.erase(this->blocked_queue.begin() + i);
+                i--;
+            } else {
+                break;
+            }
+        }
     }
 }
 
