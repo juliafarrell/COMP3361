@@ -22,10 +22,21 @@ Scheduler::Scheduler(const Scheduler& orig) {
     block_duration = orig.block_duration;
     prediction_weight = orig.prediction_weight;
     simulated_timer = orig.simulated_timer;
-    // TODO copy ready_queue
-    // TODO copy process_list
-    // TODO copy blocked_queue
-    // ^^^ I think those have to be done element by element
+    // copy ready_queue
+//    for (int i = 0; i < orig.ready_queue.size(); i++){
+//        ready_queue.push(orig.ready_queue.top());
+//        orig.ready_queue.pop();
+//    }
+//    // copy process_list
+//    for (int i = 0; i < orig.process_list.size(); i++){
+//        process_list.push_back(orig.process_list.front());
+//        orig.process_list.pop_back();
+//    }
+//    // copy blocked_queue
+//    for (int i = 0; i < orig.blocked_queue.size(); i++){
+//        blocked_queue.push_back(orig.blocked_queue.front());
+//        orig.blocked_queue.pop_back();
+//    }
 }
 
 Scheduler::~Scheduler() {
@@ -40,7 +51,12 @@ Scheduler::~Scheduler() {
 }
 
 Scheduler& Scheduler::operator =(const Scheduler orig) {
-    // TODO: implement me
+    block_duration = orig.block_duration;
+    prediction_weight = orig.prediction_weight;
+    simulated_timer = orig.simulated_timer;
+    process_list = orig.process_list;
+    ready_queue = orig.ready_queue;
+    blocked_queue = orig.blocked_queue;
 }
 
 Scheduler& Scheduler::operator =(Scheduler&& orig) {
