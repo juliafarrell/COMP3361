@@ -82,7 +82,7 @@ private:
     // returns time the CPU is idle due to blocks
     // assumes blocked list is sorted & nonempty
     float get_idle_time();
-    float calculate_avg_turnaround(std::vector<float> t);
+    float calculate_avg_turnaround();
 };
 
 #endif /* SCHEDULER_H */
