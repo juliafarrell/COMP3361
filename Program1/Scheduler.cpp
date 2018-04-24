@@ -47,25 +47,15 @@ Scheduler::~Scheduler() {
         blocked_queue.pop_back();
     }
     process_list.clear();
-    // TODO: check, is this right?
+
 }
 
-Scheduler& Scheduler::operator =(const Scheduler orig) {
-    block_duration = orig.block_duration;
-    prediction_weight = orig.prediction_weight;
-    simulated_timer = orig.simulated_timer;
-    process_list = orig.process_list;
-    ready_queue = orig.ready_queue;
-    blocked_queue = orig.blocked_queue;
+Scheduler& Scheduler::operator =(const Scheduler& orig) {
+    std::cerr << "not implemented";
 }
-// TODO: What is the difference between copy and move implementation?
+
 Scheduler& Scheduler::operator =(Scheduler&& orig) {
-    block_duration = orig.block_duration;
-    prediction_weight = orig.prediction_weight;
-    simulated_timer = orig.simulated_timer;
-    process_list = orig.process_list;
-    ready_queue = orig.ready_queue;
-    blocked_queue = orig.blocked_queue;
+    std::cerr << "not implemented";
 }
 
 void Scheduler::add_process(process p) {
@@ -80,21 +70,28 @@ void Scheduler::run() {
     float time_elapsed;
     float start_time;
     int debugging = 0;
+    
 //    while (still_running()) {
-    while (debugging < 10) {
+    while (debugging < 20) {
         start_time = this->simulated_timer;
+        
         // pull processes into ready queue if arrived
         arrive_proccesses();
+        
         // if there are processes in ready
-        if (!ready_queue.empty()) {
+        if (ready_queue.size() != 0) {
             // get the next shortest process that is ready
             // this pops it off the ready queue
             cur_process = get_next_process();
+            
             // update its prediction value
+            // time_elapsed is actual execution time of the process before blocking
             time_elapsed = update_prediction_value(cur_process);
-            // increment the global timer by 'time elapsed' 
+            
+            // increment the global timer & see if things unblock
             update_time(time_elapsed);
             update_blocked_queue();
+            
             // if process doesn't complete, add to blocked list
             if (!process_completed(cur_process)) {
                 // update block time of current process
@@ -102,25 +99,44 @@ void Scheduler::run() {
                 this->blocked_queue.push_back(cur_process);
                 print_process(start_time, cur_process, time_elapsed, 'B');
             }
+            
             // if process completes, print with code 'T'
             else {
                 print_process(start_time, cur_process, time_elapsed, 'T');
                 this->avg_turnaround.push_back(simulated_timer);
             }
             
-        } else if (!this->blocked_queue.empty()) {
-            // if there are no processes ready,
-            // CPU is idle, calculate time
-            time_elapsed = get_idle_time(); 
-            // print
-            print_idle(time_elapsed);
-            // update global timer
-            this->simulated_timer = this->simulated_timer + time_elapsed;
         } else {
-            float avg = calculate_avg_turnaround();
-            print_done(avg);
+            if (this->blocked_queue.size() != 0) {
+                // there are blocked processes but no processes ready,
+                // CPU is idle, calculate time
+                time_elapsed = get_idle_time(); 
+
+                // print
+                print_idle(time_elapsed);
+
+                // update global timer
+                this->simulated_timer = this->simulated_timer + time_elapsed;
+            } 
+            else {
+                float avg = calculate_avg_turnaround();
+                print_done(avg);
+            }
         }
         debugging++;
+    }
+    int counter = 0;
+    std::cout << "READY";
+    while (ready_queue.size() > 0) {
+        std::cout << counter <<"\n\tname: " << ready_queue.top().name 
+                << "\tpred value: " << ready_queue.top().prediction_value <<"\n";
+        ready_queue.pop();
+        counter++;
+    }
+    std::cout << "BLOCKED";
+    while (blocked_queue.size() > 0) {
+        std::cout << "\t name : " << blocked_queue.front().name;
+        blocked_queue.pop_back();
     }
 }
 
@@ -129,21 +145,29 @@ bool Scheduler::still_running() {
     else return false;
 }
 
-float Scheduler::update_prediction_value(process p) {
-    // get last execution time (head of args vector)
+float Scheduler::update_prediction_value(process &p) {
     if (p.args.size() == 0) {
         std::cerr << p.name << "completed but still trying to run";
     }
-    float last_execution_time = p.args.front();
-    // remove the head of args vector
-    p.args.pop();
-    // update prediction value for the process
-    p.prediction_value = this->prediction_weight * p.prediction_value 
-            + (1 - this->prediction_weight) * last_execution_time;
-    return last_execution_time;
+    // if its the first time running the process
+    if (p.new_process) {
+        float w0 = p.args.front();
+        p.args.pop();
+        p.new_process = false;
+        p.prediction_value = w0;
+        return w0;
+    }
+    else {
+        float ti = p.args.front();
+        p.args.pop();
+        p.prediction_value = (this->prediction_weight * p.prediction_value) +
+                (1 - this->prediction_weight) * ti;
+        return ti;
+    }
 }
 
 void Scheduler::arrive_proccesses() {
+    std::cout << "ARRIVE PROCESSESS\n";
     if (process_list.size() == 0) return;
     else {
         for (int i = process_list.size() - 1; i >= 0; i--) {
@@ -178,17 +202,26 @@ void Scheduler::update_blocked_queue() {
     else {
         // sort queue by block_time, smallest first
         sort_blocked(blocked_queue);
-        // then if its done blocking, pop off
+        
+        // then if earliest process is done blocking, pop off
         process p;
         bool searching = true;
+        
         while (searching) {
+            if (blocked_queue.size() == 0) break;
             p = blocked_queue.front();
-            if (p.time_blocked + this->block_duration > this->simulated_timer) {
-                ready_queue.push(p);
-                blocked_queue.pop_back();
+            if (p.time_blocked + this->block_duration < this->simulated_timer) {
+                this->ready_queue.push(p);
+                this->blocked_queue.pop_back();
             }
             else {
-                searching = false;
+                if (p.new_process && p.arrival_time < this->simulated_timer) {
+                    this->ready_queue.push(p);
+                    this->blocked_queue.pop_back();
+                }
+                else {
+                    searching = false;
+                }
             }
         }
     }
