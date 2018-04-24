@@ -16,7 +16,7 @@ struct process {
     std::string name; 
     float arrival_time; 
     float prediction_value; 
-    std::vector<float> args;
+    std::queue<float> args; // first in first out
     
     bool operator<(const process& other_process) const {
         if(prediction_value == other_process.prediction_value) {
@@ -36,6 +36,8 @@ public:
     virtual ~Scheduler();                       // destructor
     Scheduler& operator=(const Scheduler orig); // copy assignment
     Scheduler& operator=(Scheduler&& orig);     // move assignment
+    
+    void add_process(process p);
     
     
 private:

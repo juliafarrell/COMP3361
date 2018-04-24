@@ -56,12 +56,14 @@ int main(int argc, char** argv) {
         string p_name;                   // process name from line
         line_stream >> p_name;
         line_stream >> time;
-        vector<float> actual_exec_times; // execution times (actual) from line
+        queue<float> actual_exec_times; // execution times (actual) from line
         float exec_time;
         while (line_stream >> exec_time) { // returns false if end of line or fails to convert to float
-            actual_exec_times.push_back(exec_time);
+            actual_exec_times.push(exec_time);
         }
         process p = {p_name, time, 0, actual_exec_times};
+        
+        s->add_process(p);
     }
     
     

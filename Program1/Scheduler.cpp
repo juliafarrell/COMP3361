@@ -29,6 +29,10 @@ Scheduler& Scheduler::operator =(const Scheduler orig) {
 Scheduler& Scheduler::operator =(Scheduler&& orig) {
 }
 
+void Scheduler::add_process(process p) {
+    
+}
+
 float Scheduler::calculate_process_prediction_value(float last_execution_time, process p) {
     // W = w i
     // w = w i-1
