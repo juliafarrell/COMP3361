@@ -73,7 +73,7 @@ private:
     // updates the blocked queue based on (preseumably new) time elapsed value
     void update_blocked_queue();
     // print functions for idle and process completion
-    void print_process(process p, float exec_time, char status);
+    void print_process(float start_time, process p, float exec_time, char status);
     void print_idle(float idle_time);
     void print_done(float avg_turnarounds);
     // insertion sort for blocked vector on blocked_time
