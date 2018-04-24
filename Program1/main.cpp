@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
         while (line_stream >> exec_time) { // returns false if end of line or fails to convert to float
             actual_exec_times.push(exec_time);
         }
-        process p = {p_name, time, 0, actual_exec_times};
+        process p = {p_name, time, 0, -1, actual_exec_times};
         s->add_process(p);
     }
     s->run();

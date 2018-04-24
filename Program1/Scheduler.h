@@ -17,7 +17,8 @@
 struct process {
     std::string name; 
     float arrival_time; 
-    float prediction_value; 
+    float prediction_value;
+    float time_blocked;
     std::queue<float> args; // first in first out
     
     bool operator<(const process& other_process) const {
@@ -65,6 +66,8 @@ private:
     void update_time(float time_elapsed);
     // checks to see if a process completes: true if args.size is zero
     bool process_completed(process p);
+    // updates the blocked queue based on (preseumably new) time elapsed value
+    void update_blocked_queue();
 };
 
 #endif /* SCHEDULER_H */

@@ -69,8 +69,11 @@ void Scheduler::run() {
             time_elapsed = update_prediction_value(cur_process);
             // increment the global timer by 'time elapsed' 
             update_time(time_elapsed);
+            update_blocked_queue();
             // if process doesn't complete, add to blocked list
             if (!process_completed(cur_process)) {
+                // update block time of current process
+                cur_process.time_blocked = this->simulated_timer;
                 blocked_queue.push(cur_process);
             }
             // if not, add to blocked queue
@@ -114,4 +117,21 @@ void Scheduler::update_time(float time_elapsed) {
 bool Scheduler::process_completed(process p) {
     if (p.args.size() == 0) return true;
     else return false;
+}
+
+void Scheduler::update_blocked_queue() {
+    if (blocked_queue.size() == 0) return;
+    else {
+        bool checking = true;
+        while (checking) {
+            process p = blocked_queue.top();
+            if ((this->simulated_timer) > (p.time_blocked + this->block_duration)) {
+                blocked_queue.pop();
+                ready_queue.push(p);
+            } 
+            else {
+                checking = false;
+            }
+        }
+    }
 }
