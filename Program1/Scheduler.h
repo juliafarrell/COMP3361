@@ -53,7 +53,8 @@ private:
     std::priority_queue<process> blocked_queue;
     // ready processes, stores the struct
     std::priority_queue<process> ready_queue;
-    void update_prediction_value(process p);
+    // returns the actual execution time of the last executed process
+    float update_prediction_value(process p);
     // checks to see if blocked and ready queue are empty (false if both empty)
     bool still_running();
     // checks if any processes have arrived
@@ -62,6 +63,10 @@ private:
     process get_next_process();
     // determines if the process blocks when trying to finish its block
     bool process_blocks(process p);
+    // update the global timer based on execution time
+    void update_time(float time_elapsed);
+    // checks to see if a process completes: true if args.size is zero
+    bool process_completed(process p);
 };
 
 #endif /* SCHEDULER_H */
