@@ -170,11 +170,8 @@ void Scheduler::arrive_proccesses() {
 }
 
 process Scheduler::get_next_process() {
-//    std::cout << "\nGNP\n";
     process shortest = ready_queue.top();
-//    std::cout << "\tshortest name: " << shortest.name << "\n";
     this->ready_queue.pop();
-//    std::cout << "\tnext shortest: " << ready_queue.top().name << "\n\n";
     return shortest;
 }
 

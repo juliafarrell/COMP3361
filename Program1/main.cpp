@@ -55,7 +55,7 @@ int main(int argc, char** argv) {
         if (line.empty()) break;
         // make string stream for the line to read in the process
         istringstream line_stream(line);
-                          // process name from line
+        // process name from line
         line_stream >> p_name;
         line_stream >> time;
         queue<float> actual_exec_times; // execution times (actual) from line
