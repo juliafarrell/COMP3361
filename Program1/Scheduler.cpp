@@ -178,11 +178,8 @@ void Scheduler::arrive_proccesses() {
 }
 
 process Scheduler::get_next_process() {
-//    std::cout << "\nGNP\n";
     process shortest = ready_queue.top();
-//    std::cout << "\tshortest name: " << shortest.name << "\n";
     this->ready_queue.pop();
-//    std::cout << "\tnext shortest: " << ready_queue.top().name << "\n\n";
     return shortest;
 }
 
@@ -247,19 +244,24 @@ void Scheduler::sort_blocked(std::vector<process> &p) {
 }
 
 float Scheduler::get_idle_time() {
-    for(int i = 0; i < blocked_queue.size(); i++) {
-        if(!blocked_queue[i].new_process) {
-            // std::cout << "idle calc " << blocked_queue[i].time_blocked << " " << this->block_duration << std::endl;
-            return this->block_duration;
-        }
+    int size = this->blocked_queue.size();
+    if (size >= 2) {
+       float last_minus_first = blocked_queue[size-1].time_blocked 
+       - blocked_queue[0].time_blocked;
+       if (last_minus_first < block_duration) {
+           return blocked_queue[0].time_blocked + block_duration 
+                   - blocked_queue[size-1].time_blocked;
+       } else return block_duration;
     }
-    return 0;
+    else {
+        return block_duration;
+    }
 }
 
 float Scheduler::calculate_avg_turnaround() {
     int sum = 0, size = this->avg_turnaround.size();
     while (!this->avg_turnaround.empty()) {
-        sum += this->avg_turnaround.front();
+        sum += this->avg_turnaround.back();
         this->avg_turnaround.pop_back();
     }
     return sum / size;
