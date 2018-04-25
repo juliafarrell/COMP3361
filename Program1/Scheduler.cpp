@@ -129,7 +129,7 @@ void Scheduler::run() {
 }
 
 bool Scheduler::still_running() {
-    if (ready_queue.size() != 0 || blocked_queue.size() != 0) return true;
+    if ((ready_queue.size() != 0 || blocked_queue.size() != 0) && this->simulated_timer < 600) return true;
     else return false;
 }
 
@@ -137,35 +137,43 @@ float Scheduler::update_prediction_value(process &p) {
     if (p.args.size() == 0) {
         std::cerr << p.name << "completed but still trying to run";
     }
-    // if its the first time running the process
-    if (p.new_process) {
-        float w0 = p.args.front();
-        p.args.pop();
-        p.new_process = false;
-        p.prediction_value = w0;
-        return w0;
-    }
-    else {
-        float ti = p.args.front();
-        p.args.pop();
-        p.prediction_value = (this->prediction_weight * p.prediction_value) +
-                (1 - this->prediction_weight) * ti;
+    
+    float ti = p.args.front();
+    p.args.pop();
+    
+    if(p.prediction_value == 0) {
+        p.prediction_value = ti;
         return ti;
     }
+    
+    p.prediction_value = (this->prediction_weight * p.prediction_value) +
+        (1 - this->prediction_weight) * ti;
+    return ti;
 }
 
 void Scheduler::arrive_proccesses() {
-    if (process_list.size() == 0) return;
-    else {
-        for (int i = process_list.size() - 1; i >= 0; i--) {
-            if (process_list[i].arrival_time > this->simulated_timer) {
-                this->blocked_queue.push_back(process_list[i]);
-            } 
-            else {
-                this->ready_queue.push(process_list[i]);
-            }
+    for (int i = process_list.size() - 1; i >= 0; i--) {
+        if (process_list[i].arrival_time > this->simulated_timer) {
+            std::cout << "block process " << process_list[i].name << std::endl;
+
+            this->blocked_queue.push_back(process_list[i]);
+        } else {
+            std::cout << "ready process " << process_list[i].name << std::endl;
+            process_list[i].new_process = false;
+            this->ready_queue.push(process_list[i]);
         }
-        process_list.clear();
+    }
+    process_list.clear();
+    
+    for(int i = blocked_queue.size()-1; i >= 0; i--) {
+        if(blocked_queue[i].arrival_time < this->simulated_timer && blocked_queue[i].new_process) {
+            std::cout << "arrive process " << blocked_queue[i].name << " " << blocked_queue[i].arrival_time << " " <<
+                    this->simulated_timer << std::endl;
+            blocked_queue[i].new_process = false;
+            ready_queue.push(blocked_queue[i]);
+            blocked_queue.erase(blocked_queue.begin() + i);
+            i++;
+        }
     }
 }
 
@@ -193,27 +201,12 @@ void Scheduler::update_blocked_queue() {
         // sort queue by block_time, smallest first
         sort_blocked(blocked_queue);
         
-        // then if earliest process is done blocking, pop off
-        process p;
-        bool searching = true;
-        
-        while (searching) {
-            if (blocked_queue.size() == 0) break;
-            // should be lowest value?
-            p = blocked_queue.front();
-            if (p.time_blocked + this->block_duration < this->simulated_timer) {
-                this->ready_queue.push(p);
-                this->blocked_queue.erase(blocked_queue.begin());
-            }
-            else {
-                if (p.new_process && p.arrival_time < this->simulated_timer) {
-                    std::cout << "new process";
-                    this->ready_queue.push(p);
-                    this->blocked_queue.erase(blocked_queue.begin());
-                }
-                else {
-                    searching = false;
-                }
+        // check if each is blocked. if it isn't move it to the ready_queue, if not, break;
+        for(int i = 0; i < blocked_queue.size(); i++) {
+            if(!blocked_queue[i].new_process && blocked_queue[i].time_blocked + this->block_duration < this->simulated_timer) {
+                ready_queue.push(blocked_queue[i]);
+                blocked_queue.erase(blocked_queue.begin() + i);
+                i--;
             }
         }
     }
@@ -223,8 +216,11 @@ void Scheduler::print_process(float start_time, process p, float exec_time, char
     std::cout << start_time << "\t" <<
             p.name << "\t" << 
             exec_time << "\t" <<
-            status << "\t" <<
-            p.prediction_value << "\n";
+            status << "\t";
+            if(status != 'T')
+                std::cout << p.prediction_value << "\n";
+            else
+                std::cout << std::endl;
 }
 
 void Scheduler::print_idle(float idle_time) {
@@ -251,7 +247,13 @@ void Scheduler::sort_blocked(std::vector<process> &p) {
 }
 
 float Scheduler::get_idle_time() {
-    return this->blocked_queue[0].time_blocked + this->block_duration;
+    for(int i = 0; i < blocked_queue.size(); i++) {
+        if(!blocked_queue[i].new_process) {
+            // std::cout << "idle calc " << blocked_queue[i].time_blocked << " " << this->block_duration << std::endl;
+            return this->block_duration;
+        }
+    }
+    return 0;
 }
 
 float Scheduler::calculate_avg_turnaround() {

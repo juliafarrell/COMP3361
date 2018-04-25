@@ -24,10 +24,10 @@ struct process {
     
     bool operator<(const process& other_process) const {
         if(prediction_value == other_process.prediction_value) {
-            return arrival_time < other_process.arrival_time;
+            return arrival_time > other_process.arrival_time;
         }
         
-        return prediction_value < other_process.prediction_value;
+        return prediction_value > other_process.prediction_value;
     }
 };
 
