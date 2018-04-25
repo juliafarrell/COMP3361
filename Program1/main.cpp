@@ -52,6 +52,7 @@ int main(int argc, char** argv) {
     float time;
     while (!file.eof()) {
         getline(file, line);
+        if (line.empty()) break;
         // make string stream for the line to read in the process
         istringstream line_stream(line);
                           // process name from line
@@ -62,7 +63,7 @@ int main(int argc, char** argv) {
         while (line_stream >> exec_time) { // returns false if end of line or fails to convert to float
             actual_exec_times.push(exec_time);
         }
-        process p = {p_name, time, 0, -1, actual_exec_times};
+        process p = {p_name, time, 0, -1, true, actual_exec_times};
         s->add_process(p);
     }
     s->run();
